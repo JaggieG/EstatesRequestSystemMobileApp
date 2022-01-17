@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "EstatesRequestSystemMobileApp",
+    "scheme": "aiglonestatesmobapp",
     "slug": "EstatesRequestSystemMobileApp",
     "version": "1.0.0",
     "orientation": "portrait",
