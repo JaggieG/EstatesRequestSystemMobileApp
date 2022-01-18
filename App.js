@@ -11,24 +11,41 @@ import {
   Linking
 } from 'react-native';
 import { NavigationContainer} from '@react-navigation/native';
-import { createStackNavigator, navigation } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect, useState, useContext } from 'react';
+import {store, useGlobalState} from 'state-pool';
+
+import { useNavigation } from '@react-navigation/native';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // add the stack navigator as this is going to be the main navigation of our app
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
+const currentState = store.getState("user_info", {
+  persist: true
+})
+console.log('START:' + JSON.stringify(currentState))
 
+store.setState("user_info", {
+  email_address : currentState.value.email_address,
+  display_name : currentState.value.display_name,
+  JWT_Token : currentState.value.JWT_Token,
+  connection_url : "http://jaglocaltesttemp.aiglon.ch:8080/genericsolutions/estatesrequestsystem/mobile_api/test"
+},
+{
+  persist: true
+});
 
-// Global device setup
+// Global device setupss
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-
-import {setUserEmailAddress, setUserDisplayName, userDataClass } from './userData.js';
-
-// Here is the main applicatoin
+// Here is the main applicatoind
 export default function App() {
+  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
+  
 
   const handleOpenURL = ({ url }) => {
     if (url.indexOf("?email") !== -1) {
@@ -38,52 +55,206 @@ export default function App() {
           var url_split2 = url_split[1].split("&displayname=")
 
           var email_address = url_split2[0]
-          var display_name = url_split2[1]          
-
-          setUserEmailAddress(email_address)
-          setUserDisplayName(display_name)
+          var display_name = url_split2[1]
+          var JWT_Token  = 'fdshyd87745u3brgfb'       
           
-      
+          setUserInfo({
+            email_address : email_address,
+            display_name : display_name,
+            JWT_Token : JWT_Token,
+            connection_url : userInfo.connection_url
+          })
+        
       }
   };
 
 
   useEffect(() => {
-    // Listening for the return URL
+    // Listening for the return URLs
     Linking.addEventListener('url', handleOpenURL);
   }, []);
 
-
   return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Estates Home" component={HomeScreen}/>
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+     <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'My Requests') {
+              iconName = focused
+                ? 'ios-information-circle'
+                : 'ios-information-circle-outline';
+            } else if (route.name === 'Make A Request') {
+              iconName = focused
+                ? 'ios-information-circle'
+                : 'ios-information-circle-outline';
+            }else if (route.name === 'Connection') {
+              iconName = focused
+                ? 'ios-information-circle'
+                : 'ios-information-circle-outline';
+            }
+
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+        })}
+      >
+        <Tab.Screen name="My Requests" component={MyRequestsScreen} options={{ tabBarBadge: 3 }}/>
+        <Tab.Screen name="Make A Request" component={MakeARequestScreen} />
+        <Tab.Screen name="Connection" component={Connection} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
 
-function HomeScreen({route, navigation}) {
-  const [displayName, setDisplayName] = useState(userDataClass.display_name)
-  const [emailAddress, setEmailAddress] = useState(userDataClass.email_address)
-
-  return (
-    
-    <View style={styles.container}>
+function MyRequestsScreen({ navigation }) {
+  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
+  if (userInfo.email_address) {
+    return (
+      <View style={styles.container}>
       <StatusBar style = "dark"  />
       <SafeAreaView style={styles.mainView}>
         <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
-         <TouchableOpacity style={styles.socialBtn}
-             onPress={() => Linking.openURL(userDataClass.oAuthURL)}>
-             <Text style={other.buttonText} >
-               {emailAddress === null ? "Connect via Google" : "You are connected !"}</Text>
-           </TouchableOpacity>
+        <Text>my  requests</Text>
         </ScrollView>
       </SafeAreaView>
     </View>
-  )
+    );
+  } else {
+    return (
+      <NoConnectionView></NoConnectionView>
+    );
+  }
+  
 }
+
+function MakeARequestScreen({ navigation })  {
+  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
+  if (userInfo.email_address) {
+    return (
+      <View style={styles.container}>
+      <StatusBar style = "dark"  />
+      <SafeAreaView style={styles.mainView}>
+        <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
+        <Text>make a request</Text>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+    );
+  } else {
+    return (
+      <NoConnectionView></NoConnectionView>
+    );
+  }
+}
+
+function Connection({ navigation })  {
+  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
+  if (userInfo.email_address) {
+    return (
+      <View style={connectionStyles.baseView}>
+        <StatusBar style = "dark"  />
+        <SafeAreaView>
+        <Image style={{height : 50, width: 50}}source={require('./assets/googlelogo.jpg')}></Image>
+         <Text style={{marginBottom: 50}}>Connection Details</Text>
+         <Text>Email Address: {userInfo.email_address}</Text>
+         <Text>Display Name: {userInfo.display_name}</Text>
+         <Text>JWT_Token: {userInfo.JWT_Token}</Text>
+         <TouchableOpacity style={connectionStyles.appButtonContainer}
+             onPress={() => Linking.openURL(userInfo.connection_url)}>
+             <Text style={connectionStyles.appButtonText}>Refresh Details</Text>
+           </TouchableOpacity>
+        </SafeAreaView>
+      </View>
+    );
+  } else {
+    return (
+      <View style={connectionStyles.baseView}>
+        <StatusBar style = "dark"  />
+        <SafeAreaView>
+        <Image style={{height : 50, width: 50}}source={require('./assets/googlelogo.jpg')}></Image>
+          <TouchableOpacity style={connectionStyles.appButtonContainer}
+             onPress={() => Linking.openURL(userInfo.connection_url)}>
+             <Text style={connectionStyles.appButtonText}>Click here to login with Google</Text>
+           </TouchableOpacity>
+          
+        </SafeAreaView>
+      </View>
+    );
+  }
+  
+}
+const NoConnectionView = (props) => {
+  const navigation = useNavigation();
+  return (
+    <View style={noConnectionStyles.baseView}>
+    <StatusBar style = "dark"  />
+    <SafeAreaView>
+       <TouchableOpacity style={noConnectionStyles.appButtonContainer}
+           onPress={() => navigation.navigate('Connection')}>
+           <Text style={noConnectionStyles.appButtonText}>Please login in to start</Text>
+         </TouchableOpacity>
+    </SafeAreaView>
+  </View>
+      
+  ) 
+}
+
+const noConnectionStyles = StyleSheet.create({
+  baseView : {
+    flex: 1, 
+    justifyContent: 'center',
+    alignItems: 'center' 
+  },
+  mainView: {
+    backgroundColor: '#CCC',
+  },
+  appButtonContainer: {
+    elevation: 8,
+    backgroundColor: "#009688",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12
+  },
+  appButtonText: {
+    fontSize: 18,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase"
+  }
+})
+
+const connectionStyles = StyleSheet.create({
+  baseView : {
+    flex: 1, 
+    justifyContent: 'center',
+    alignItems: 'center' 
+  },
+  mainView: {
+    backgroundColor: '#CCC',
+  },
+  appButtonContainer: {
+    elevation: 8,
+    backgroundColor: "#009688",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12
+  },
+  appButtonText: {
+    fontSize: 18,
+    color: "#fff",
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase"
+  }
+})
+
+
 
 const styles = StyleSheet.create({
   container: {
