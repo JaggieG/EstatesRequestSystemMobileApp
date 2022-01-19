@@ -22,20 +22,69 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 // add the stack navigator as this is going to be the main navigation of our app
 const Tab = createBottomTabNavigator();
 
-const currentState = store.getState("user_info", {
-  persist: true
-})
-console.log('START:' + JSON.stringify(currentState))
+// API URLs
+const api_server_url_testing = "http://jaglocaltesttemp.aiglon.ch:8080"
+const api_server_url_prod = "https://webapp-googleclassroomadmin-staging.azurewebsites.net"
+const api_server_url = api_server_url_testing
+const api_path = "/genericsolutions/estatesrequestsystem/mobile_api/"
+const authentication_endpoint = "authMobileDevice"
 
-store.setState("user_info", {
-  email_address : currentState.value.email_address,
-  display_name : currentState.value.display_name,
-  JWT_Token : currentState.value.JWT_Token,
-  connection_url : "http://jaglocaltesttemp.aiglon.ch:8080/genericsolutions/estatesrequestsystem/mobile_api/test"
+import {getAllMyRequests} from './data_api.js'
+
+var currentStateAppInfo = {}
+
+try {
+  currentStateAppInfo = store.getState("app_info", {
+    persist: true
+  })
+} catch(err) {
+  var currentStateAppInfoValue = {
+    email_address : null,
+    display_name : null,
+    JWT_Token : null,
+    api_details :  {
+      api_server_url : api_server_url,
+      api_path : api_path,
+      authentication_endpoint : authentication_endpoint
+   }
+  }
+  currentStateAppInfo["value"] = currentStateAppInfoValue
+}
+
+store.setState("app_info", {
+  email_address : currentStateAppInfo.value.email_address,
+  display_name : currentStateAppInfo.value.display_name,
+  JWT_Token : currentStateAppInfo.value.JWT_Token,
+  api_details :  {
+    api_server_url : currentStateAppInfo.value.api_details.api_server_url,
+    api_path : currentStateAppInfo.value.api_details.api_path,
+    authentication_endpoint : currentStateAppInfo.value.api_details.authentication_endpoint
+ }
 },
 {
   persist: true
 });
+
+var currentStateMyRequests = {}
+
+try {
+  currentStateMyRequests = store.getState("my_requests", {
+    persist: true
+  })
+} catch(err) {
+  var currentStateMyRequestsValue = {
+    my_requests : null
+  }
+  currentStateMyRequests["value"] = currentStateMyRequestsValue
+}
+
+store.setState("my_requests", {
+  my_requests :  currentStateMyRequests.value.my_request
+},
+{
+  persist: true
+});
+
 
 // Global device setupss
 
@@ -44,28 +93,34 @@ const windowHeight = Dimensions.get('window').height;
 
 // Here is the main applicatoind
 export default function App() {
-  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
-  
+  const [appInfo, setAppInfo] = useGlobalState("app_info",{ persist: true})
 
   const handleOpenURL = ({ url }) => {
     if (url.indexOf("?email") !== -1) {
-      if (url)
-      //consider security implications of this
-          var url_split = url.split("email=")
-          var url_split2 = url_split[1].split("&displayname=")
+      if (url) {
+       
+       //consider security implications of this
+       var regex = /[?&]([^=#]+)=([^&#]*)/g,
+       params = {},
+       match;
+        while (match = regex.exec(url)) {
+          params[match[1]] = match[2];
+        }  
+      
+        setAppInfo({
+          email_address : params["email"],
+          display_name : params["displayname"].replace("%20"," "),
+          JWT_Token : params["jwtToken"],
+          api_details :  {
+            api_server_url : appInfo.api_server_url,
+            api_path : appInfo.api_path,
+            authentication_endpoint : appInfo.authentication_endpoint
+         }
+        })
 
-          var email_address = url_split2[0]
-          var display_name = url_split2[1]
-          var JWT_Token  = 'fdshyd87745u3brgfb'       
-          
-          setUserInfo({
-            email_address : email_address,
-            display_name : display_name,
-            JWT_Token : JWT_Token,
-            connection_url : userInfo.connection_url
-          })
-        
       }
+      }
+      
   };
 
 
@@ -112,18 +167,36 @@ export default function App() {
 
 
 function MyRequestsScreen({ navigation }) {
-  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
-  if (userInfo.email_address) {
-    return (
-      <View style={styles.container}>
-      <StatusBar style = "dark"  />
-      <SafeAreaView style={styles.mainView}>
-        <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
-        <Text>my  requests</Text>
-        </ScrollView>
-      </SafeAreaView>
-    </View>
-    );
+  const [myRequests, setMyRequest] = useGlobalState("my_requests",{ persist: true})
+  const [appInfo, setAppInfo] = useGlobalState("app_info",{ persist: true})
+
+  React.useEffect(() => {
+    getAllMyRequests(appInfo,function(err, api_return) {   
+        if (err) {
+         console.log(err)
+         
+        } else {
+          console.log(api_return)
+          setMyRequest(api_return)
+          
+        }
+    })
+  }, []);
+  
+
+  //
+  if (appInfo.email_address) {
+   return (
+        <View style={styles.container}>
+        <StatusBar style = "dark"  />
+        <SafeAreaView style={styles.mainView}>
+          <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
+          <Text>Loading!</Text>
+          <Text>{myRequests.my_request}</Text>
+          </ScrollView>
+        </SafeAreaView>
+      </View>
+   )
   } else {
     return (
       <NoConnectionView></NoConnectionView>
@@ -133,8 +206,9 @@ function MyRequestsScreen({ navigation }) {
 }
 
 function MakeARequestScreen({ navigation })  {
-  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
-  if (userInfo.email_address) {
+  const [appInfo, setAppInfo] = useGlobalState("app_info",{ persist: true})
+  
+  if (appInfo.email_address) {
     return (
       <View style={styles.container}>
       <StatusBar style = "dark"  />
@@ -153,19 +227,21 @@ function MakeARequestScreen({ navigation })  {
 }
 
 function Connection({ navigation })  {
-  const [userInfo, setUserInfo] = useGlobalState("user_info",{ persist: true})
-  if (userInfo.email_address) {
+  const [appInfo, setAppInfo] = useGlobalState("app_info",null,{ persist: true})
+  const authURL =  appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.authentication_endpoint
+  if (appInfo.email_address) {
+    
     return (
       <View style={connectionStyles.baseView}>
         <StatusBar style = "dark"  />
         <SafeAreaView>
         <Image style={{height : 50, width: 50}}source={require('./assets/googlelogo.jpg')}></Image>
          <Text style={{marginBottom: 50}}>Connection Details</Text>
-         <Text>Email Address: {userInfo.email_address}</Text>
-         <Text>Display Name: {userInfo.display_name}</Text>
-         <Text>JWT_Token: {userInfo.JWT_Token}</Text>
+         <Text>Email Address: {appInfo.email_address}</Text>
+         <Text>Display Name: {appInfo.display_name}</Text>
+         <Text>JWT_Token: {appInfo.JWT_Token}</Text>
          <TouchableOpacity style={connectionStyles.appButtonContainer}
-             onPress={() => Linking.openURL(userInfo.connection_url)}>
+             onPress={() => Linking.openURL(authURL)}>
              <Text style={connectionStyles.appButtonText}>Refresh Details</Text>
            </TouchableOpacity>
         </SafeAreaView>
@@ -178,7 +254,7 @@ function Connection({ navigation })  {
         <SafeAreaView>
         <Image style={{height : 50, width: 50}}source={require('./assets/googlelogo.jpg')}></Image>
           <TouchableOpacity style={connectionStyles.appButtonContainer}
-             onPress={() => Linking.openURL(userInfo.connection_url)}>
+             onPress={() => Linking.openURL(authURL)}>
              <Text style={connectionStyles.appButtonText}>Click here to login with Google</Text>
            </TouchableOpacity>
           
@@ -199,8 +275,19 @@ const NoConnectionView = (props) => {
            <Text style={noConnectionStyles.appButtonText}>Please login in to start</Text>
          </TouchableOpacity>
     </SafeAreaView>
-  </View>
-      
+  </View>     
+  ) 
+}
+
+const ErrorView = (props) => {
+  const navigation = useNavigation();
+  return (
+    <View style={noConnectionStyles.baseView}>
+    <StatusBar style = "dark"  />
+    <SafeAreaView>
+        <Text style={noConnectionStyles.appButtonText}>Oops looks like there was no error</Text>
+    </SafeAreaView>
+  </View>     
   ) 
 }
 
