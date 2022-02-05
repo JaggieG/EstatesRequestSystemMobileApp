@@ -15,8 +15,8 @@ import {
 
 // the connection tab
 const MakeARequestTabComponent = (props) => {
-    const { appInfo } = useContext(props.appInfoContext);
-    const navigation = props.navigation
+  var store = props.store
+  const appInfo = store.getState()
       return (
         <View style={styles.container}>
         <StatusBar style = "dark"  />

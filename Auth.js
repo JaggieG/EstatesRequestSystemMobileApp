@@ -1,5 +1,5 @@
 // Create a context
-import React, { createContext} from 'react';
+import { useState, useEffect, createContext} from 'react';
 
 // API URLs
 const api_server_url_testing = "http://jaglocaltesttemp.aiglon.ch:8080"
@@ -21,45 +21,55 @@ const initialState = {
    }
   }
 
+
+
+
+
+  /*
+  
 const AuthContext = createContext(initialState);
+AuthContext.displayName = 'App Information';
 
 const AuthProvider = ({ children }) => {
-  const [auth, setAuthState] = useState(initialState);
+  
+  const [appInfo, setAppInfoState] = useState(initialState);
 
+  console.log(appInfo)
   // Get current auth state from AsyncStorage
-  const getAuthState = async () => {
+  const getAppInfoState = async () => {
     try {
-      const authDataString = await AsyncStorage.getItem("auth");
-      const authData = JSON.parse(authDataString || {});
+      const appInfoDataString = await AsyncStorage.getItem("appInfo");
+      const appInfoData = JSON.parse(appInfoDataString || {});
       // Configure axios headers
-      configureAxiosHeaders(authData.token, authData.phone);
-      setAuthState(authData);
+      //configureAxiosHeaders(authData.token, authData.phone);
+
+      setAppInfoState(appInfoData);
     } catch (err) {
-      setAuthState({});
+      setAppInfoState({});
     }
   };
 
   // Update AsyncStorage & context state
-  const setAuth = async (auth) => {
+  const setAppInfo = async (appInfo) => {
     try {
-      await AsyncStorage.setItem("auth", JSON.stringify(auth));
-      // Configure axios headers
-      configureAxiosHeaders(auth.token, auth.phone);
-      setAuthState(auth);
+      await AsyncStorage.setItem("appInfo", JSON.stringify(appInfo));
+      // // Configure axios headers
+      // configureAxiosHeaders(auth.token, auth.phone);
+      setAppInfoState(auth);
     } catch (error) {
       Promise.reject(error);
     }
   };
 
   useEffect(() => {
-    getAuthState();
+    getAppInfoState();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
+    <AuthContext.Provider value={{ appInfo, setAppInfo }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
+*/
 export { AuthContext, AuthProvider };

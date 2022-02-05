@@ -18,8 +18,8 @@ import {getAllMyRequests} from '../CustomLogic/data_api.js'
 
 // the connection tab
 const MyRequestsTabComponent = (props) => {
-    const { appInfo } = useContext(props.appInfoContext);
-    const navigation = props.navigation
+  var store = props.store
+  const appInfo = store.getState()
 
     React.useEffect(() => {
       getAllMyRequests(appInfo,function(err, api_return) {   

@@ -9,6 +9,8 @@ import {
 
 import React, { useEffect, useState, useContext } from 'react';
 
+import { useSelector} from 'redux'
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { ConnectionTabComponent } from '../CustomComponents/ConnectionTab'
@@ -16,11 +18,10 @@ import { MyRequestsTabComponent } from '../CustomComponents/MyRequestsTab'
 import { MakeARequestTabComponent } from '../CustomComponents/MakeARequestTab'
 
 const CustomTabNavigatorComponent = (props) => {
-    const AuthContext = props.appInfoContext
-    const { appInfo } = useContext(AuthContext);
+    var store = props.store
+    const appInfo = store.getState()
     return (
-    
-       <Tab.Navigator
+       <Tab.Navigator appInfo = {appInfo}
             screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
@@ -51,7 +52,7 @@ const CustomTabNavigatorComponent = (props) => {
           
               <Tab.Screen 
               name="Connection" 
-              children={()=><ConnectionTabScreenComponent appInfoContext={AuthContext}/>}
+              children={()=><ConnectionTabScreenComponent store={store}/>}
                />
             ) : (
             <>
@@ -59,39 +60,41 @@ const CustomTabNavigatorComponent = (props) => {
             <Tab.Screen 
               name="My Requests" 
               options={{ tabBarBadge: 3 }}
-              children={()=><MyRequestsTabScreenComponent appInfoContext={AuthContext}/>}
+              children={()=><MyRequestsTabScreenComponent store={store}/>}
             />
 
             <Tab.Screen 
               name="Make A Request" 
-              children={()=><MakeARequestTabScreenComponent appInfoContext={AuthContext}/>}
+              children={()=><MakeARequestTabScreenComponent store={store}/>}
             />
 
             <Tab.Screen 
               name="Connection" 
-              children={()=><ConnectionTabScreenComponent appInfoContext={AuthContext}/>}
+              children={()=><ConnectionTabScreenComponent store={store}/>}
             />
             </>
             )}  
         </Tab.Navigator>
+        
+      
     )
   }
 
   const MyRequestsTabScreenComponent = (props) => {
     return (
-        <MyRequestsTabComponent {...props}></MyRequestsTabComponent>
+        <MyRequestsTabComponent {...props}></MyRequestsTabComponent>  
       )
   }
 
   const ConnectionTabScreenComponent = (props) => {
     return (
-       <ConnectionTabComponent {...props}></ConnectionTabComponent>
+         <ConnectionTabComponent {...props}></ConnectionTabComponent>
       )
   }
 
-    function MakeARequestTabScreenComponent ({ navigation })  {
+    function MakeARequestTabScreenComponent (props)  {
     return (
-      <MakeARequestTabComponent navigation={navigation}></MakeARequestTabComponent>
+      <MakeARequestTabComponent {...props}></MakeARequestTabComponent>
     )
   }
   

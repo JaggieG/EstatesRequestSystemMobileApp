@@ -20,24 +20,29 @@ import { CustomTabNavigatorComponent } from './CustomComponents/TabNavigator'
 import {ErrorView} from './CustomComponents/ErrorView'
 
 //custom logic
-import  { AuthContext, AuthProvider } from './Auth.js'
-import {authenticateMe, processAuthReturn} from './CustomLogic/auth_api' 
+// import  { AuthContext, AuthProvider } from './Auth.js'
+ import {authenticateMe, processAuthReturn} from './CustomLogic/auth_api' 
 
-authenticateMe()
+import store from './appStore'
+import { useSelector} from 'redux'
 // Here is the main applicatoind
 export default function App() {
- 
+  const [newState, setNewState] = useState(false); 
+
   useEffect(() => {
     // Listening for the return URL when authenticating
     // this is not 100% secure, so should be looked at
-    Linking.addEventListener('url', processAuthReturn);
+    Linking.addEventListener('url', function(url) {
+      processAuthReturn(url, store, newState, setNewState)
+    })   
   }, []);
-
+  
   return (
     
-     <NavigationContainer>
-       <CustomTabNavigatorComponent appInfoContext={AuthContext}></CustomTabNavigatorComponent>
-     </NavigationContainer>
+      <NavigationContainer newState={newState}>
+         <CustomTabNavigatorComponent store={store}></CustomTabNavigatorComponent>
+      </NavigationContainer>
+    
   );
 }
 

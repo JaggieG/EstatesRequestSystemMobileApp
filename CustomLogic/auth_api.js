@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
-import React, { useContext } from 'react';
+import { useState, useContext } from 'react';
+
 import { 
   Linking
 } from 'react-native';
@@ -8,17 +9,20 @@ import {
 
 export const authenticateMe = (appInfo) => {
   // Go off an do Google oAuth
-  
   Linking.getInitialURL().then(function(initialUrl) {
+    
     const authURL = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.authentication_endpoint
     const completeURL = authURL + '?returnURL=' + encodeURI(initialUrl)
-
+    console.log(completeURL)
     Linking.openURL(completeURL)
   });  
 }
 
 
-export const processAuthReturn = ({ url }) => {
+export const processAuthReturn = (url_, store, newState, setNewState) => {
+
+  const url = url_.url
+  
     if (url.indexOf("?email") !== -1) {
       if (url) {
        
@@ -30,15 +34,17 @@ export const processAuthReturn = ({ url }) => {
             while (match = regex.exec(url)) {
             params[match[1]] = match[2];
             }  
-        console.log(params["email"])
-        console.log(params["displayname"].replace("%20"," "))
-        console.log(params["jwtToken"])
-            // appInfo["email_address"] =  params["email"]
-            // appInfo["display_name"] =  params["displayname"].replace("%20"," ")
-            // appInfo["JWT_Token"] = params["jwtToken"]
+            store.dispatch({
+              type: "LOGIN",
+              payload: { 
+                email_address: params["email"], 
+                display_name: params["displayname"].replace("%20"," "),
+                JWT_Token: params["JWT_Token"],
+              }
+            });
 
-            //setAppInfo(appInfo)
-        
+            setNewState(!newState)
+
       }
       }
 }

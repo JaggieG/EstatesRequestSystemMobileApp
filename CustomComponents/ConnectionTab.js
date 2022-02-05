@@ -13,7 +13,7 @@ import {
     View, 
     SafeAreaView, 
     StyleSheet,
-    Linking,
+    Image,
     TouchableOpacity
   } from 'react-native';
 
@@ -21,8 +21,9 @@ import {
 
 // the connection tab
 const ConnectionTabComponent = (props) => {
-    const { appInfo } = useContext(props.appInfoContext);
-    const navigation = props.navigation
+    var store = props.store
+    const appInfo = store.getState()
+    
         if (appInfo.email_address != null) {
             // we have auth info      
             return (
