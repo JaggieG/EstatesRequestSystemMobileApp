@@ -6,16 +6,17 @@ import {
 } from 'react-native';
 
 
-import { getTranslatedMessage } from '../messages.js'
+import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 import {
   forceDevCreditionals, 
   forced_dev_emailAdddress,
   forced_dev_displayName,
   forced_dev_JWTToken,
-} from '../globalSettings.js'
+} from './globalSettings.js'
 
-import appInfoStore from '../appInfoStore.js';
+import appInfoStore from './appInfoStore.js';
+import { getAppInfo } from './storage.js';
 
 
 export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
@@ -25,7 +26,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
     var platform = Platform.OS
     const authURL = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.authentication_endpoint
     if (forceDevCreditionals) {
-      Alert.alert(getTranslatedMessage('forced_dev'))
+      Alert.alert(getTranslatedMessage('forced_dev', appInfoStore))
 
       appInfoStore.dispatch({
         type: "LOGIN",
@@ -49,7 +50,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
         //Linking.openURL(completeURL)
 
 
-        Alert.alert(getTranslatedMessage('forced_dev'))
+        Alert.alert(getTranslatedMessage('forced_dev',appInfoStore))
         appInfoStore.dispatch({
           type: "LOGIN",
           payload: { 
@@ -57,15 +58,15 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
             display_name: forced_dev_displayName, 
             JWT_Token: forced_dev_JWTToken,
           }
-        });
+        });  
         refreshMe()
       } else {
         const completeURL = authURL + '?returnURL=' + encodeURI(initialUrl)
         if(initialUrl) {
-          console.log('found intial URL')
+        
           Linking.openURL(completeURL)
         } else {
-          Alert.alert(getTranslatedMessage('url_failure'))
+          Alert.alert(getTranslatedMessage('url_failure',appInfoStore))
         }
         
       } 
@@ -102,22 +103,27 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
           })
         }).then((response) => response.json())
           .then((json) => {
-            console.log(json)
+            //console.log(json)
             var record_count = json.record_count
 
             if (record_count == 0) {
-              Alert.alert(getTranslatedMessage('authentication_failure_noRecords'))
+              Alert.alert(getTranslatedMessage('authentication_failure_noRecords', appInfoStore))
             } else {
               var the_record = json.data[0]
               appInfoStore.dispatch({
                 type: "LOGIN",
                 payload: { 
                   email_address: the_record.text_emailAddress, 
-                  display_name: the_record.text_displayName, //.replace("%20"," ")',
+                  display_name: the_record.text_displayName,
                   JWT_Token: the_record.text_jwtToken,
                 }
               });
+              
+              
             }
+
+            
+            
            
             refreshMe()
           })
@@ -129,7 +135,16 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
       }
 }
 
-export const processAuthAtStartUp = () => {
-
-
+export async function processAuthAtStartUp(appInfoStore, setReadyToLoad) {
+  var appInfoFromStorage = await getAppInfo()
+  appInfoStore.dispatch({
+    type: "STARTUP",
+    payload: { 
+      email_address: appInfoFromStorage.email_address, 
+      display_name: appInfoFromStorage.display_name,
+      JWT_Token: appInfoFromStorage.JWT_Token,
+    }
+  });
+  setReadyToLoad(true)
+  
 }

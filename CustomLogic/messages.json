@@ -12,6 +12,27 @@
             "en" : "Connection",
             "fr" : "Connexion"
         },
+        "settings_tab" : {
+            "en" : "Settings",
+            "fr" : "Reglages"
+        },
+        "not_logged_in" : {
+            "en" : "You are not currently logged in \r\n\r\n Please click below to connect with your Google Workspace account",
+            "fr" : "Vous n'etes pas connecté, \r\n\r\n Veuilliez cliquer le button dessous pour se logger avec votre compte Google Workspace"
+        },
+        "logged_in" : {
+            "en" : "You are currently logged in\r\n\r\n Please see details below",
+            "fr" : "Vous etes connecté\r\n Detailes dessous"
+        },
+        "log_in_again" : {
+            "en" : "Click the button in order to refresh the connection",
+            "fr" : "Cliquer le button pour faire connecter a nouveau."
+        },
+        "choose_language" : {
+            "en" : "Choose Langauge",
+            "fr" : "Chosir Langue."
+        },
+        
         "authentication_failure" : {
             "en" : "Oops soomething went wrong with authentication! - Please speak to the IT",
             "fr" : "Une erreur se produit, veuilliez contactez la service infomatique"

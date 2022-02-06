@@ -20,14 +20,10 @@ import {
 import {getAllMyRequests} from '../CustomLogic/data_api.js'
 
 // get global funciton for translation
-import { getTranslatedMessage } from '../messages.js'
+import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
 
-// Global device setupss
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 
 // the connection tab
 const MyRequestsTabComponent = (props) => {
@@ -81,7 +77,7 @@ const MyRequestsTabComponent = (props) => {
               <>
               <TableView style={{backgroundColor : "#ccc"}}>
               <Section
-                header={getTranslatedMessage('my_requests_tab')}
+                header={getTranslatedMessage('my_requests_tab', props.appInfoStore)}
               >
             {myRequests.data.map((item, i) => (
                   <RequestCustomCell 
@@ -107,28 +103,11 @@ const MyRequestsTabComponent = (props) => {
     return (
         <Cell 
           {...props}
-          onPress={props.action}
+         
           backgroundColor= "#ccc"
           cellContentView = {
-            <View style={customCellStyles.generalView}>  
-               <Image
-                  style={customCellStyles.headerImage}
-                  source={props.imgUri}
-                />
-                <View style={customCellStyles.etaBubble}>
-                  <Text style={customCellStyles.etaText} >
-                    {props.eta}{"\n"}
-                    mins
-                  </Text>
-                </View>
-  
-                <Text style={customCellStyles.title}>
-                  {props.title}
-                </Text>
-  
-                <Text style={customCellStyles.tagLine}>
-                  {props.tagline}
-                </Text>
+            <View>
+              <Text>{props.title}</Text>
             </View>
           }
           />
@@ -213,7 +192,7 @@ const MyRequestsTabComponent = (props) => {
   },
   headerImage : {
     borderRadius : 10,
-    width : windowWidth - 30,
+    width : 800 - 30,
   }
 });
 

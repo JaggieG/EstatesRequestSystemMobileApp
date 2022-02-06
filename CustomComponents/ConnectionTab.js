@@ -1,8 +1,3 @@
-
-
-// Nice sign in with Google Button
-import GoogleButton from 'react-google-button'
-
 // react status bar
 import { StatusBar } from 'expo-status-bar';
 import React, {useContext } from 'react';
@@ -14,10 +9,20 @@ import {
     SafeAreaView, 
     StyleSheet,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
   } from 'react-native';
 
   import {authenticateMe} from '../CustomLogic/auth_api'
+
+
+  
+// Global device setupss
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+  // get global funciton for translation
+import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 // the connection tab
 const ConnectionTabComponent = (props) => {
@@ -41,17 +46,21 @@ const ConnectionTabComponent = (props) => {
                 </View>
                 );
         } else {
-           
             return (
             <View style={connectionStyles.baseView}>
                 <StatusBar style = "dark"  />
                 <SafeAreaView>
-                    <Text style={{marginBottom: 50}}>You aren't logged in!</Text>
-                    <TouchableOpacity style={connectionStyles.appButtonContainer}
-                        onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}>
-                        <Text style={connectionStyles.appButtonText}>Log In</Text>
-                    </TouchableOpacity>
-                    {/* <GoogleButton onClick={() => Linking.openURL(authURL)} /> */}
+                    <Image source={require('../assets/aiglon_logo.png')} style={connectionStyles.aiglonLogo}/>      
+                        <Text style={connectionStyles.welcomeText}> 
+                        {getTranslatedMessage('not_logged_in', props.appInfoStore)}
+                        </Text>
+                    
+                        <TouchableOpacity activeOpacity = { .5 } 
+                            onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}
+                        > 
+                            <Image source={require('../assets/google-signin-button.png')} style={connectionStyles.signInButton}/>          
+                        </TouchableOpacity>
+                    
                 </SafeAreaView>
             </View>
             );
@@ -61,25 +70,31 @@ const ConnectionTabComponent = (props) => {
 const connectionStyles = StyleSheet.create({
     baseView : {
         flex: 1, 
+        backgroundColor: '#FFF',
+    },
+    signInButton : {
+        width : windowWidth - 20,
+        resizeMode : "contain",
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    }, 
+    welcomeText : {
+        fontSize : 20,
+        marginTop : 60,
         justifyContent: 'center',
-        alignItems: 'center' 
-    },
-    mainView: {
-        backgroundColor: '#CCC',
-    },
-    appButtonContainer: {
-        elevation: 8,
-        backgroundColor: "#009688",
-        borderRadius: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 12
-    },
-    appButtonText: {
-        fontSize: 18,
-        color: "#fff",
-        fontWeight: "bold",
-        alignSelf: "center",
-        textTransform: "uppercase"
+        alignItems: 'center' ,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width : windowWidth - 40,
+        textAlign: 'center', // <-- the magic
+        fontWeight: 'bold',
+    }, 
+    aiglonLogo : {
+        justifyContent: 'center',
+        alignItems: 'center' ,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginTop : 30,
     }
 })
 
