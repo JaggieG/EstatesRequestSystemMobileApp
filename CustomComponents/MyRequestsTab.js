@@ -2,7 +2,7 @@
 
 // react status bar
 import { StatusBar } from 'expo-status-bar';
-import React, {useContext } from 'react';
+import React, {useState } from 'react';
 
 //standard react ocmponents
 import { 
@@ -11,26 +11,54 @@ import {
     SafeAreaView, 
     StyleSheet,
     ScrollView,
+    ActivityIndicator,
+    RefreshControl,
+    Dimensions,
   } from 'react-native';
 
 // custom Logic
 import {getAllMyRequests} from '../CustomLogic/data_api.js'
 
+// get global funciton for translation
+import { getTranslatedMessage } from '../messages.js'
+
+import { Cell, Section, TableView } from 'react-native-tableview-simple';
+
+// Global device setupss
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 // the connection tab
 const MyRequestsTabComponent = (props) => {
-  var store = props.store
-  const appInfo = store.getState()
+  var appInfoStore = props.appInfoStore
+  const appInfo = appInfoStore.getState()
+
+  const [myRequests, setMyRequests] = useState('LOADING')
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getAllMyRequests(appInfo, function(err, api_return) {   
+      if (err) {
+       console.log(err)
+       
+      } else {
+        console.log(api_return)
+        setMyRequests(api_return)
+        setRefreshing(false)
+      }
+  })
+  }, []);
 
     React.useEffect(() => {
-      getAllMyRequests(appInfo,function(err, api_return) {   
+      getAllMyRequests(appInfo, function(err, api_return) {   
           if (err) {
            console.log(err)
            
           } else {
-            // var appInfoCopy = appInfo
-            // appInfoCopy["myRequests"] = api_return
-            // setAppInfo(appInfoCopy)
-  
+            console.log(api_return)
+            setMyRequests(api_return)
           }
       })
     }, []);
@@ -39,16 +67,74 @@ const MyRequestsTabComponent = (props) => {
         <View style={styles.container}>
         <StatusBar style = "dark"  />
         <SafeAreaView style={styles.mainView}>
-            <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
-            <Text>Loading!</Text>
-            <Text></Text>
+            <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />}
+            
+            >
+            {myRequests == 'LOADING' ? (
+             <ActivityIndicator size="large" />
+            ) : (
+              <>
+              <TableView style={{backgroundColor : "#ccc"}}>
+              <Section
+                header={getTranslatedMessage('my_requests_tab')}
+              >
+            {myRequests.data.map((item, i) => (
+                  <RequestCustomCell 
+                  onPress={() => {
+                    Alert.alert("Price",item.price)
+                  }}
+                  title={item.request_text_requesterName}>
+               
+                  </RequestCustomCell>
+            ))}
+            </Section>
+          </TableView>
+          <Text>{JSON.stringify(myRequests)}</Text>
+              </>
+            )}  
             </ScrollView>
         </SafeAreaView>
         </View>
-    )
-    
+    )    
   }
 
+  const RequestCustomCell = (props) => {
+    return (
+        <Cell 
+          {...props}
+          onPress={props.action}
+          backgroundColor= "#ccc"
+          cellContentView = {
+            <View style={customCellStyles.generalView}>  
+               <Image
+                  style={customCellStyles.headerImage}
+                  source={props.imgUri}
+                />
+                <View style={customCellStyles.etaBubble}>
+                  <Text style={customCellStyles.etaText} >
+                    {props.eta}{"\n"}
+                    mins
+                  </Text>
+                </View>
+  
+                <Text style={customCellStyles.title}>
+                  {props.title}
+                </Text>
+  
+                <Text style={customCellStyles.tagLine}>
+                  {props.tagline}
+                </Text>
+            </View>
+          }
+          />
+        
+    ) 
+  }
 
   const styles = StyleSheet.create({
     container: {
@@ -80,6 +166,56 @@ const MyRequestsTabComponent = (props) => {
       textAlign: 'center'
     },
    });
+
+
+   const customCellStyles = StyleSheet.create({
+  generalView : {
+     paddingTop: 10, 
+     paddingBottom: 50, 
+     backgroundColor : "#ccc"
+  },
+  etaBubble : {
+    backgroundColor : "#FFF",
+    borderRadius : 75,
+    paddingTop : 10,
+    paddingBottom : 10,
+    paddingLeft : 20,
+    paddingRight : 20,
+    justifyContent: "center",
+    position : "absolute",
+    right : 20,
+    bottom: 20,
+  },
+  etaText : {
+    color : "#000",
+    fontWeight : "bold",
+    fontSize : 15,
+    justifyContent : "center",
+    alignItems : "center"
+  },
+  tagLine : {
+    position: "absolute",
+    paddingTop : 5,
+    bottom: 0,
+    left : 5,
+    color : "grey"
+  },
+  title : {
+    color : "#000",
+    fontWeight : "bold",
+    fontSize : 22,
+    marginTop : 5,
+    position: "absolute",
+    bottom: 20,
+    left : 5,
+    zIndex: 5,
+    justifyContent : "center"
+  },
+  headerImage : {
+    borderRadius : 10,
+    width : windowWidth - 30,
+  }
+});
 
 // export the custom tab for later use
 export {MyRequestsTabComponent}

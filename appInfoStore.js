@@ -6,6 +6,7 @@ const api_server_url_prod = "https://webapp-googleclassroomadmin-staging.azurewe
 const api_server_url = api_server_url_testing
 const api_path = "/genericsolutions/estatesrequestsystem/mobile_api/"
 const authentication_endpoint = "authMobileDevice"
+const retrieval_endpoint = "retrieval"
 
 const defaultState = {
     loginSuccess: false,
@@ -15,7 +16,8 @@ const defaultState = {
     api_details :  {
           api_server_url : api_server_url,
           api_path : api_path,
-          authentication_endpoint : authentication_endpoint
+          authentication_endpoint : authentication_endpoint,
+          retrieval_endpoint : retrieval_endpoint,
      }
   }
 
@@ -23,11 +25,18 @@ function appInfo(state=defaultState, action) {
   switch(action.type) {
     case "LOGIN":
       return {...state,
-        email_address: action.payload.email_address, 
-        display_name: action.payload.display_name, 
-        JWT_Token: action.payload.JWT_Token, 
-        loginSuccess: true,
-        };
+          email_address: action.payload.email_address, 
+          display_name: action.payload.display_name, 
+          JWT_Token: action.payload.JWT_Token, 
+          loginSuccess: true,
+       };
+       case "LOGOUT":
+        return {...state,
+            email_address: null, 
+            display_name: null, 
+            JWT_Token: null, 
+            loginSuccess: false,
+         };
     default:
       return state;
   }

@@ -21,9 +21,7 @@ import {
 
 // the connection tab
 const ConnectionTabComponent = (props) => {
-    var store = props.store
-    const appInfo = store.getState()
-    
+    const appInfo = props.appInfoStore.getState()    
         if (appInfo.email_address != null) {
             // we have auth info      
             return (
@@ -36,7 +34,7 @@ const ConnectionTabComponent = (props) => {
                     <Text>Display Name: {appInfo.display_name}</Text>
                     <Text>JWT_Token: {appInfo.JWT_Token}</Text>
                     <TouchableOpacity style={connectionStyles.appButtonContainer}
-                        onPress={() => authenticateMe(appInfo)}>
+                        onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}>
                         <Text style={connectionStyles.appButtonText}>Refresh Details</Text>
                     </TouchableOpacity>
                     </SafeAreaView>
@@ -50,7 +48,7 @@ const ConnectionTabComponent = (props) => {
                 <SafeAreaView>
                     <Text style={{marginBottom: 50}}>You aren't logged in!</Text>
                     <TouchableOpacity style={connectionStyles.appButtonContainer}
-                        onPress={() => authenticateMe(appInfo)}>
+                        onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}>
                         <Text style={connectionStyles.appButtonText}>Log In</Text>
                     </TouchableOpacity>
                     {/* <GoogleButton onClick={() => Linking.openURL(authURL)} /> */}

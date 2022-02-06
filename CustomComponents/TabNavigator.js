@@ -3,38 +3,39 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
 
-import { 
-  Text,
-} from 'react-native';
-
-import React, { useEffect, useState, useContext } from 'react';
-
-import { useSelector} from 'redux'
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+// get global funciton for translation
+import { getTranslatedMessage } from '../messages.js'
+
+// Are are all of the custom tab components
 import { ConnectionTabComponent } from '../CustomComponents/ConnectionTab'
 import { MyRequestsTabComponent } from '../CustomComponents/MyRequestsTab'
 import { MakeARequestTabComponent } from '../CustomComponents/MakeARequestTab'
 
 const CustomTabNavigatorComponent = (props) => {
-    var store = props.store
-    const appInfo = store.getState()
+    
+  //get the application global variables that we might need to accces when we are processing items
+
+    var appInfoStore = props.appInfoStore
+    var refreshMe = props.refreshMe
+    const appInfo = appInfoStore.getState()
+
     return (
        <Tab.Navigator appInfo = {appInfo}
             screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
 
-                if (route.name === 'My Requests') {
+                if (route.name === getTranslatedMessage('my_requests_tab')) {
                 iconName = focused
                     ? 'ios-information-circle'
                     : 'ios-information-circle-outline';
-                } else if (route.name === 'Make A Request') {
+                } else if (route.name === getTranslatedMessage('make_request_tab')) {
                 iconName = focused
                     ? 'ios-information-circle'
                     : 'ios-information-circle-outline';
-                } else if (route.name === 'Connection') {
+                } else if (route.name === getTranslatedMessage('connection_tab')) {
                 iconName = focused
                     ? 'ios-information-circle'
                     : 'ios-information-circle-outline';
@@ -51,26 +52,26 @@ const CustomTabNavigatorComponent = (props) => {
         {appInfo.email_address == null ? (
           
               <Tab.Screen 
-              name="Connection" 
-              children={()=><ConnectionTabScreenComponent store={store}/>}
+              name={getTranslatedMessage('connection_tab')} 
+            children={()=><ConnectionTabScreenComponent {...props}/>}
                />
             ) : (
             <>
             
             <Tab.Screen 
-              name="My Requests" 
+              name={getTranslatedMessage('my_requests_tab')} 
               options={{ tabBarBadge: 3 }}
-              children={()=><MyRequestsTabScreenComponent store={store}/>}
+              children={()=><MyRequestsTabScreenComponent {...props}/>}
             />
 
             <Tab.Screen 
-              name="Make A Request" 
-              children={()=><MakeARequestTabScreenComponent store={store}/>}
+              name={getTranslatedMessage('make_request_tab')}
+              children={()=><MakeARequestTabScreenComponent {...props}/>}
             />
 
             <Tab.Screen 
-              name="Connection" 
-              children={()=><ConnectionTabScreenComponent store={store}/>}
+              name={getTranslatedMessage('connection_tab')} 
+              children={()=><ConnectionTabScreenComponent {...props}/>}
             />
             </>
             )}  

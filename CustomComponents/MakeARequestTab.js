@@ -2,7 +2,6 @@
 
 // react status bar
 import { StatusBar } from 'expo-status-bar';
-import React, {useContext } from 'react';
 
 //standard react ocmponents
 import { 
@@ -10,13 +9,18 @@ import {
     View, 
     SafeAreaView, 
     StyleSheet,
-    Linking
+    ScrollView,
   } from 'react-native';
+
+  // Global device setupss
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 // the connection tab
 const MakeARequestTabComponent = (props) => {
-  var store = props.store
-  const appInfo = store.getState()
+  var appInfoStore = props.appInfoStore
+  const appInfo = appInfoStore.getState()
       return (
         <View style={styles.container}>
         <StatusBar style = "dark"  />

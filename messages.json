@@ -1,0 +1,34 @@
+{
+    "allMessages" : {
+        "my_requests_tab" : {
+            "en" : "My Requests",
+            "fr" : "Mes Requetes"
+        },
+        "make_request_tab" : {
+            "en" : "Make a Request",
+            "fr" : "Creer un Requetes"
+        },
+        "connection_tab" : {
+            "en" : "Connection",
+            "fr" : "Connexion"
+        },
+        "authentication_failure" : {
+            "en" : "Oops soomething went wrong with authentication! - Please speak to the IT",
+            "fr" : "Une erreur se produit, veuilliez contactez la service infomatique"
+        },
+        "urlFailure" : {
+            "en" : "In order to be able to call the oAuth we need a redirect URL - this is taken when the expo app is opened with the barcode, please scan a barcode",
+            "fr" : "In order to be able to call the oAuth we need a redirect URL - this is taken when the expo app is opened with the barcode, please scan a barcode"
+        },
+        "forced_dev" : {
+            "en" : "You have been forced into DEV mode",
+            "fr" : "Le mode de devleopment est activé"
+        },
+        "authentication_failure_noRecords" : {
+            "en" : "No records were retured from the auth server, bizarre! Plase speak to IT",
+            "fr" : "Aucun record a été retourner du serveur d'authenification, veuillie contacter la service informatique"
+        }
+
+        
+    }
+}

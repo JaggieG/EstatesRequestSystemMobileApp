@@ -1,4 +1,4 @@
-export const getAllMyRequests = async (appInfo,callback) => {
+export const getAllMyRequests = async (appInfo, callback) => {
     const baseURL = getBaseURL(appInfo)
     var myRequestEndpoint = 'getMyRequests'
     var completeURL = baseURL + myRequestEndpoint
@@ -29,14 +29,14 @@ export const getAllMyRequests = async (appInfo,callback) => {
 
 }
 
-function getBaseURL(appInfo) {
+const getBaseURL = (appInfo)  => {
     return appInfo.api_details.api_server_url + appInfo.api_details.api_path
 }
 
-function getEmailAddress(appInfo) {
+const getEmailAddress = (appInfo) => {
     return appInfo.email_address
 }
 
-function getJWTToken(appInfo) {
+const getJWTToken = (appInfo) => {
     return appInfo.JWT_Token
 }
