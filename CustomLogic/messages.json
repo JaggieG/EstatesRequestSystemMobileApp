@@ -6,7 +6,7 @@
         },
         "make_request_tab" : {
             "en" : "Make a Request",
-            "fr" : "Creer un Requetes"
+            "fr" : "Creer un Requete"
         },
         "connection_tab" : {
             "en" : "Connection",
@@ -16,6 +16,8 @@
             "en" : "Settings",
             "fr" : "Reglages"
         },
+
+
         "not_logged_in" : {
             "en" : "You are not currently logged in \r\n\r\n Please click below to connect with your Google Workspace account",
             "fr" : "Vous n'etes pas connecté, \r\n\r\n Veuilliez cliquer le button dessous pour se logger avec votre compte Google Workspace"
@@ -32,7 +34,8 @@
             "en" : "Choose Langauge",
             "fr" : "Chosir Langue."
         },
-        
+
+
         "authentication_failure" : {
             "en" : "Oops soomething went wrong with authentication! - Please speak to the IT",
             "fr" : "Une erreur se produit, veuilliez contactez la service infomatique"
@@ -48,6 +51,54 @@
         "authentication_failure_noRecords" : {
             "en" : "No records were retured from the auth server, bizarre! Plase speak to IT",
             "fr" : "Aucun record a été retourner du serveur d'authenification, veuillie contacter la service informatique"
+        },
+
+
+        "make_request_title" : {
+            "en" : "Please fill in the form below to add a request.",
+            "fr" : "Veuillier remplir la formualire dessous pour creer un nouveau requete."
+        },
+        "make_request_building" : {
+            "en" : "Building / Location",
+            "fr" : "Batiment / Endroit"
+        },
+        "make_request_urgency" : {
+            "en" : "Urgency",
+            "fr" : "Urgence"
+        },
+        "make_request_description" : {
+            "en" : "Description",
+            "fr" : "Description"
+        },
+
+        "please_choose" : {
+            "en" : "Please choose",
+            "fr" : "Veuilliz Choisir"
+        },
+        "submit" : {
+            "en" : "Send",
+            "fr" : "Envoyer"
+        },
+
+
+
+        "make_request_no_building" : {
+            "en" : "You didn't choose a building / location",
+            "fr" : "Vous n'avez pas choisi un batiment / endroit"
+        },
+        "make_request_no_urgency" : {
+            "en" : "You didn't choose an urgency",
+            "fr" : "Vous n'avez pas choisi l'urgence"
+        },
+        "make_request_no_description" : {
+            "en" : "You didn't type a description!",
+            "fr" : "Vous n'avez tappé un description"
+        },
+
+
+        "generic_error" : {
+            "en" : "Oops soomething went wrong with authentication! - Please speak to the IT",
+            "fr" : "Une erreur se produit, veuilliez contactez la service infomatique"
         }
 
         

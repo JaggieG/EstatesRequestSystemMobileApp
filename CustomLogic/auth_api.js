@@ -18,6 +18,8 @@ import {
 import appInfoStore from './appInfoStore.js';
 import { getAppInfo } from './storage.js';
 
+import { defaultAppInfo } from './globalSettings';
+
 
 export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
   // Go off an do Google oAuth
@@ -27,13 +29,15 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
     const authURL = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.authentication_endpoint
     if (forceDevCreditionals) {
       Alert.alert(getTranslatedMessage('forced_dev', appInfoStore))
-
+        const api_details = defaultAppInfo.appInfo.api_details
+        console.log('defaultAppInfo: ' + JSON.stringify(api_details))
       appInfoStore.dispatch({
         type: "LOGIN",
         payload: { 
           email_address: forced_dev_emailAdddress, 
           display_name: forced_dev_displayName, 
           JWT_Token: forced_dev_JWTToken,
+          api_details : api_details,     
         }
       });
       // as we have some fake login data
@@ -49,7 +53,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
         const completeURL = authURL + '?returnURL=' + encodeURI(initialUrl)
         //Linking.openURL(completeURL)
 
-
+        const api_details = defaultAppInfo.api_details
         Alert.alert(getTranslatedMessage('forced_dev',appInfoStore))
         appInfoStore.dispatch({
           type: "LOGIN",
@@ -57,6 +61,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
             email_address: forced_dev_emailAdddress, 
             display_name: forced_dev_displayName, 
             JWT_Token: forced_dev_JWTToken,
+            api_details : api_details, 
           }
         });  
         refreshMe()

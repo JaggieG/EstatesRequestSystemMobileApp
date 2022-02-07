@@ -1,25 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 
-
-// API URLs
-const api_server_url_testing = "http://jaglocaltesttemp.aiglon.ch:8080"
-const api_server_url_prod = "https://webapp-googleclassroomadmin-staging.azurewebsites.net"
-const api_server_url = api_server_url_testing
-const api_path = "/genericsolutions/estatesrequestsystem/mobile_api/"
-const authentication_endpoint = "authMobileDevice"
-
-const initialState = {
-    appInfo : {
-      email_address : null,
-      display_name : null,
-      JWT_Token : null,
-      api_details :  {
-            api_server_url : api_server_url,
-            api_path : api_path,
-            authentication_endpoint : authentication_endpoint
-       }
-     }
-    }
+import { defaultAppInfo } from './globalSettings';
 
 const store_key = 'AiglonEstatesStore'
 
@@ -41,7 +22,7 @@ async function save(key, value) {
       // if there is no value in the store then we should add one as we need it
     var result =  await getValueFor(store_key)
     if (result) {
-        await updateAppInfo(initialState)
+        await updateAppInfo(defaultAppInfo)
         return await getValueFor(store_key)
     } else {
         return result

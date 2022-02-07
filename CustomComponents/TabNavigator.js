@@ -19,7 +19,6 @@ const CustomTabNavigatorComponent = (props) => {
   //get the application global variables that we might need to accces when we are processing items
 
     var appInfoStore = props.appInfoStore
-    console.log(appInfoStore)
     var refreshMe = props.refreshMe
     const appInfo = appInfoStore.getState()
 

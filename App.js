@@ -59,7 +59,7 @@ export default function App() {
     
   );
   } else {
-    // this isso quick that probably willnever be seen, but put an activity indicator to be nice!
+    // this is so quick that probably willnever be seen, but put an activity indicator to be nice!
     return (
 
       <View style={baseStyles.baseView}>

@@ -55,6 +55,24 @@ const SettingsTabComponent = (props) => {
                                 <Text style={{fontWeight : "bold"}}>JWT Token:</Text>
                                 <Text> {appInfo.JWT_Token}</Text>
                             </View>
+
+                            
+                            <View style={{flexDirection: 'row' }}>
+                                <Text style={{fontWeight : "bold"}}>api_server_url:</Text>
+                                <Text> {appInfo.api_details.api_server_url}</Text>
+                            </View>
+
+                            
+                            <View style={{flexDirection: 'row' }}>
+                                <Text style={{fontWeight : "bold"}}>authentication_endpoint</Text>
+                                <Text> {appInfo.api_details.authentication_endpoint}</Text>
+                            </View>
+
+                            
+                            <View style={{flexDirection: 'row' }}>
+                                <Text style={{fontWeight : "bold"}}>api_path</Text>
+                                <Text> {appInfo.api_details.api_path}</Text>
+                            </View>
                         </View>
 
                         <Text style={connectionStyles.welcomeText}> 

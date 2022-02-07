@@ -26,12 +26,23 @@ const defaultState = {
 function appInfo(state=defaultState, action) {
   switch(action.type) {
     case "LOGIN":
+      if (action.payload.api_details) {
         var new_state = {...state,
-                        email_address: action.payload.email_address, 
-                        display_name: action.payload.display_name, 
-                        JWT_Token: action.payload.JWT_Token, 
-                        loginSuccess: true,
+          email_address: action.payload.email_address, 
+          display_name: action.payload.display_name, 
+          JWT_Token: action.payload.JWT_Token, 
+          api_details : action.payload.api_details,
+          loginSuccess: true,
         }
+      } else {
+        var new_state = {...state,
+          email_address: action.payload.email_address, 
+          display_name: action.payload.display_name, 
+          JWT_Token: action.payload.JWT_Token, 
+          loginSuccess: true,
+        }
+      }
+    
         updateAppInfo(JSON.stringify(new_state))
         return new_state;
      case "LOGOUT":
