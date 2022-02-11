@@ -77,8 +77,73 @@ export const createANewRequst = async (appInfo,
         callback(err,null)
         return err
     }
+}
 
+export const getUrgencyList = async (appInfo, callback) => {
+    const baseURL = getBaseURL(appInfo)
+    var myRequestEndpoint = 'getUrgency'
+    var completeURL = baseURL + myRequestEndpoint
+    var email_address = getEmailAddress(appInfo)
+    var JWT_Token = getJWTToken(appInfo)
 
+    try {
+        let response = await fetch(completeURL, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authentication' : 'Bearer ' + JWT_Token
+            },
+            body: JSON.stringify({
+                authObject : {
+                    email_address: email_address
+                },
+                payload : {
+
+                }
+            })
+        });
+        
+        let json = await response.json();
+        callback(null, json)
+    } catch(err) {
+        console.log(err)
+        callback(err,null)
+        return err
+    }
+}
+
+export const getItemList = async (appInfo, callback) => {
+    const baseURL = getBaseURL(appInfo)
+    var myRequestEndpoint = 'getItems'
+    var completeURL = baseURL + myRequestEndpoint
+    var email_address = getEmailAddress(appInfo)
+    var JWT_Token = getJWTToken(appInfo)
+    try {
+        let response = await fetch(completeURL, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authentication' : 'Bearer ' + JWT_Token
+            },
+            body: JSON.stringify({
+                authObject : {
+                    email_address: email_address
+                },
+                payload : {
+
+                }
+            })//
+        });
+        
+        let json = await response.json();
+        callback(null, json)
+    } catch(err) {
+        console.log(err)
+        callback(err,null)
+        return err
+    }
 }
 
 const getBaseURL = (appInfo)  => {

@@ -97,7 +97,7 @@
 
 
         "generic_error" : {
-            "en" : "Oops soomething went wrong with authentication! - Please speak to the IT",
+            "en" : "Oops soomething went wrong! - Please speak to the IT",
             "fr" : "Une erreur se produit, veuilliez contactez la service infomatique"
         }
 

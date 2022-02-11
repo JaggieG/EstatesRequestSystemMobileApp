@@ -16,6 +16,7 @@ import {
     RefreshControl,
     Dimensions,
     Alert,
+    Image,
   } from 'react-native';
 
 // custom Logic
@@ -28,6 +29,8 @@ import { getTranslatedMessage } from '../CustomLogic/messages.js'
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import appInfoStore from '../CustomLogic/appInfoStore.js';
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 // the connection tab
 const MyRequestsTabComponent = (props) => {
@@ -38,14 +41,17 @@ const MyRequestsTabComponent = (props) => {
   const [myRequests, setMyRequests] = useState('LOADING')
   const [refreshing, setRefreshing] = useState(false);
 
+
+  const [errorDetected, setErrorDetected] = useState(false)
+  const [errorDetails, setErrorDetails] = useState('')
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     getAllMyRequests(appInfo, function(err, api_return) {   
       if (err) {
-       console.log(err)
-       
+       setErrorDetected(true)
+       setErrorDetails(err.toString())
       } else {
-        console.log(api_return)
         setMyRequests(api_return)
         setRefreshing(false)
       }
@@ -53,18 +59,40 @@ const MyRequestsTabComponent = (props) => {
   }, []);
 
     React.useEffect(() => {
-      getAllMyRequests(appInfo, function(err, api_return) {   
+      const unsubscribe = navigation.addListener('focus', () => {
+        getAllMyRequests(appInfo, function(err, api_return) {   
           if (err) {
-           console.log(err)
-           Alert.alert(err.toString() + JSON.stringify(appInfo))
+            setErrorDetected(true)
+            setErrorDetails(err.toString())
+           //Alert.alert(err.toString() + JSON.stringify(appInfo))
           } else {
-            console.log(api_return)
             setMyRequests(api_return)
           }
       })
+      });
+  
+      // Return the function to unsubscribe from the event so it gets removed on unmount
+      return unsubscribe;
     }, []);
     
-
+    if (errorDetected) {
+      return (
+        <View style={styles.container}>
+        <StatusBar style = "dark"  />
+        <SafeAreaView style={{height:"100%", backgroundColor: "#FFF"}}>
+          <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
+          <View style={styles.mainView}>
+          <Image source={require('../assets/error.jpg')}  style={[styles.errorImage]}/> 
+          
+          
+            <Text>{getTranslatedMessage('generic_error', props.appInfoStore)}</Text>
+            <Text>{errorDetails}</Text>
+            </View> 
+          </ScrollView>
+        </SafeAreaView>
+      </View>
+      )
+    } else {
 
     if (myRequests == 'LOADING') {
       return (
@@ -77,59 +105,11 @@ const MyRequestsTabComponent = (props) => {
             </SafeAreaView>
         </View>
       )
-
-    } else if (myRequests.error) {
-      return (
-        <View style={styles.container}>
-        <StatusBar style = "dark"  />
-        <SafeAreaView style={styles.mainView}>
-            <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
-              <Text>{getTranslatedMessage('generic_error', appInfoStore)}</Text>  
-            </ScrollView>
-            </SafeAreaView>
-        </View>
-      )
     } else {
-      if (myRequests.record_count == 0) {
-        return (
-          <View style={styles.container}>
-          <StatusBar style = "dark"  />
-            <SafeAreaView style={styles.mainView}>
-              <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                  />
-                }>
-        
-                  <TableView style={{backgroundColor : "#FFF"}}>
-                  <Section header={getTranslatedMessage('my_requests_tab', props.appInfoStore)}>
-                     
-                            <RequestCustomCell {...props}
-                            onPress={() => {
-                              Alert.alert("Price",item.price)
-                            }}
-                            title="No Records Found"
-                            submittedDateTime=""
-                            urgency=""
-                            building=""
-                            >
-                            </RequestCustomCell>
-                   
-                  </Section>
-               </TableView>
-               <Text>{JSON.stringify(myRequests)}</Text>
-            
+
       
-          </ScrollView>
-       </SafeAreaView>
-      </View>
-
-
-        )
-      } else {
-        return (
+        if (myRequests.record_count == 0) {
+          return (
             <View style={styles.container}>
             <StatusBar style = "dark"  />
               <SafeAreaView style={styles.mainView}>
@@ -143,35 +123,74 @@ const MyRequestsTabComponent = (props) => {
           
                     <TableView style={{backgroundColor : "#FFF"}}>
                     <Section header={getTranslatedMessage('my_requests_tab', props.appInfoStore)}>
-                        {myRequests.data.map((item, i) => (
+                      
                               <RequestCustomCell {...props}
                               onPress={() => {
                                 Alert.alert("Price",item.price)
                               }}
-                              title={item.text_requesterName}
-                              submittedDateTime={item.date_submittedDateTime}
-                              urgency={item.int_urgency}
-                              building={item.text_building}
+                              title="No Records Found"
+                              submittedDateTime=""
+                              urgency=""
+                              building=""
                               >
                               </RequestCustomCell>
-                        ))}
+                    
                     </Section>
-                 </TableView>
-                 <Text>{JSON.stringify(myRequests)}</Text>
+                </TableView>
+                <Text>{JSON.stringify(myRequests)}</Text>
               
         
             </ScrollView>
-         </SafeAreaView>
+        </SafeAreaView>
         </View>
-        )
+
+
+          )
+        } else {
+          return (
+              <View style={styles.container}>
+              <StatusBar style = "dark"  />
+                <SafeAreaView style={styles.mainView}>
+                  <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
+                    refreshControl={
+                      <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                      />
+                    }>
+            
+                      <TableView style={{backgroundColor : "#FFF"}}>
+                      <Section header={getTranslatedMessage('my_requests_tab', props.appInfoStore)}>
+                          {myRequests.data.map((item, i) => (
+                                <RequestCustomCell{...props}
+                                id={i}
+                                onPress={() => {
+                                  Alert.alert("Price",item.price)
+                                }}
+                                title={item.text_requesterName}
+                                submittedDateTime={item.date_submittedDateTime}
+                                urgency={item.int_urgency}
+                                building={item.text_building}
+                                >
+                                </RequestCustomCell>
+                          ))}
+                      </Section>
+                  </TableView>
+                  <Text>{JSON.stringify(myRequests)}</Text>
+                
+          
+              </ScrollView>
+          </SafeAreaView>
+          </View>
+          )
+        }
       }
     }
-
   }
 
   const RequestCustomCell = (props) => {
     return (
-        <Cell 
+        <Cell key={props.id}
           {...props}//
 
           backgroundColor= "#FFF"
@@ -211,16 +230,29 @@ const MyRequestsTabComponent = (props) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor: '#FFF',
     },
     mainView: {
       backgroundColor: '#FFF',
       width: "100%",
       height: "100%",
-      justifyContent: 'flex-end',
+      marginTop: 20,
+      paddingLeft: 10,
+      paddingRight: 10,
     },
     tableCell : {
       height : "290",
-    }
+    },
+    errorImage : {
+      justifyContent: 'center',
+      alignItems: 'center' ,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      width: windowWidth - 40,
+      height : 200,
+      marginBottom : 20
+  
+  }
   });
   
   const other = StyleSheet.create({

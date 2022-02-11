@@ -24,6 +24,10 @@ const CustomTabNavigatorComponent = (props) => {
 
     return (
        <Tab.Navigator appInfo = {appInfo}
+            options={{ unmountOnBlur: true }}
+            listeners={({ navigation }) => ({
+              blur: () => navigation.setParams({ screen: undefined }),
+            })}
             screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
                 let iconName;

@@ -18,7 +18,8 @@ import {
     TouchableWithoutFeedback,
     Button,
     Alert,
-    Keyboard
+    Keyboard,
+    Image
   } from 'react-native';
 
   // Global device setups
@@ -31,7 +32,11 @@ const windowHeight = Dimensions.get('window').height;
 
 
   // custom Logic
-import {createANewRequst} from '../CustomLogic/data_api.js'
+import {
+  createANewRequst,
+  getItemList,
+  getUrgencyList
+  } from '../CustomLogic/data_api.js'
 
   
 // the connection tab
@@ -46,21 +51,55 @@ const MakeARequestTabComponent = (props) => {
   const [urgencyText, onChangeUrgencyText] = useState("");
 
 
-  const [buildingId, onChangeBuildingId] = useState("");
+  const [buildingIndex, onChangeBuildingIndex] = useState("");
   const [urgencyId, onChangeUrgencyId] = useState("");
 
   const [pageDataLoaded, setPageDataLoaded] = useState(false)
 
    const [buildingArray, setBuildingArray] = useState([])
+   const [buildingInfo, setBuildingInfo] = useState([])
+
    const [urgencyArray, setUrgencyArray] = useState([])
+
+   const [errorDetected, setErrorDetected] = useState(false)
+   const [errorDetails, setErrorDetails] = useState('')
     
     useEffect(() => {
-    
-      setBuildingArray(['Alpina','belvedere'])
-    
-      setUrgencyArray([1,2,3,4,5])
-      setPageDataLoaded(true)
-      
+      const unsubscribe = navigation.addListener('focus', () => {
+        // The screen is focused
+        // Call any action
+        var appInfo = appInfoStore.getState()
+        getUrgencyList(appInfo, function(err, urgencyReturnData) {
+              if(err) {
+                setErrorDetected(true)
+                setErrorDetails(err.toString())
+              } else {
+                var urgencyArray = urgencyReturnData.message
+                setUrgencyArray(urgencyArray)
+
+                getItemList(appInfo, function(err, buildingReturnData) {
+                  if(err) {
+                    setErrorDetails(err.toString())
+                    setErrorDetected(true)
+                  } else {
+                    var buildingDetails = buildingReturnData.message
+                    var buidlingInfo = {}
+                    var buildingArray = []
+                    for (var i = 0; i < buildingDetails.data.length ; i++) {
+                    buildingArray.push(buildingDetails.data[i].text_name)
+                    buidlingInfo[buildingDetails.data[i].text_name] = buildingDetails.data[i].id
+                    }
+                    setBuildingInfo(buidlingInfo)
+                    setBuildingArray(buildingArray)    
+                    setPageDataLoaded(true)   
+                  }
+                })
+            }
+        })
+      });
+  
+      // Return the function to unsubscribe from the event so it gets removed on unmount
+      return unsubscribe;
     }, []);
 
     const submitForm = (navigation, appInfoStore) => {
@@ -86,10 +125,13 @@ const MakeARequestTabComponent = (props) => {
 
       if (okToSubmit) {
         setPageDataLoaded(false)
+        var buildingId = buildingInfo[buildingText]
+        
         createANewRequst(appInfo, buildingText, buildingId, urgencyText, urgencyId, descriptionText, function(err, api_return) {  
           if (err) {
-           console.log(err)
-           Alert.alert(err.toString())
+            setErrorDetails(err.toString())
+            setErrorDetected(true)
+        //   Alert.alert(err.toString())
            setPageDataLoaded(true)
           } else {
             setPageDataLoaded(true)
@@ -103,12 +145,12 @@ const MakeARequestTabComponent = (props) => {
             //set all varibales back to blank
             onChangeBuildingText("")
             onChangeUrgencyText("")
-            onChangeBuildingId("")
+            onChangeBuildingIndex("")
             onChangeUrgencyId("")
             onChangeDescriptionText("")
             
             navigation.navigate(getTranslatedMessage('my_requests_tab',appInfoStore))
-            console.log(api_return)    
+          
           }
       })
        
@@ -121,12 +163,12 @@ const MakeARequestTabComponent = (props) => {
         return (
           <View style={styles.container}>
           <StatusBar style = "dark"  />
-          <SafeAreaView>
+          <SafeAreaView style={{ backgroundColor: "#FFF"}}>
             <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
               <View style={styles.mainView}>
               <Text> {getTranslatedMessage('make_request_title', props.appInfoStore)}</Text>
-              <View>
+              <View style={{ backgroundColor: "#FFF"}}>
               <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_building', props.appInfoStore)}</Text>
                 <SelectDropdown
                     data={buildingArray}
@@ -134,9 +176,8 @@ const MakeARequestTabComponent = (props) => {
                     buttonStyle={formStyles.dropdownBtnStyle}
                     buttonTextStyle={formStyles.dropdownBtnTxtStyle}
                     onSelect={(selectedItem, index) => {
-                      console.log(selectedItem, index)
                       onChangeBuildingText(selectedItem)
-                      onChangeBuildingId(index)
+                      onChangeBuildingIndex(index)
                     }}
                     buttonTextAfterSelection={(selectedItem, index) => {
                       // text represented after item is selected
@@ -200,41 +241,71 @@ const MakeARequestTabComponent = (props) => {
         </View>
         );
       } else {
-        return (
-          <View style={styles.container}>
-          <StatusBar style = "dark"  />
-          <SafeAreaView style={styles.mainView}>
-            <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
-              <View style={[activityIndicatorStyles.container]}>
-                <ActivityIndicator size="large" color="#0000ff"  />
-              </View> 
-            </ScrollView>
-          </SafeAreaView>
-        </View>
-        )
+
+        if (errorDetected) {
+          return (
+            <View style={styles.container}>
+            <StatusBar style = "dark"  />
+            <SafeAreaView>
+              <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
+              <View style={styles.mainView}>
+              <Image source={require('../assets/error.jpg')}  style={[styles.errorImage]}/> 
+              
+              
+                <Text>{getTranslatedMessage('generic_error', props.appInfoStore)}</Text>
+                <Text>{errorDetails}</Text>
+                </View> 
+              </ScrollView>
+            </SafeAreaView>
+          </View>
+          )
+        } else {
+          return (
+            <View style={styles.container}>
+            <StatusBar style = "dark"  />
+            <SafeAreaView style={styles.mainView}>
+              <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
+                <View style={[activityIndicatorStyles.container]}>
+                  <ActivityIndicator size="large" color="#0000ff"  />
+                </View> 
+              </ScrollView>
+            </SafeAreaView>
+          </View>
+          )
+        }
+       
       }
 
     } 
 
-    
-
-
+  
   const styles = StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor: '#FFF',
     },
     mainView: {
       backgroundColor: '#FFF',
       width: "100%",
       height: "100%",
-      justifyContent: 'flex-end',
-      marginTop: 10,
-      marginLeft: 10,
-      marginRight: 10
+      marginTop: 20,
+      paddingLeft: 10,
+      paddingRight: 10,
     },
     tableCell : {
+      backgroundColor: '#FFF',
       height : "290",
-    }
+    },
+    errorImage : {
+      justifyContent: 'center',
+      alignItems: 'center' ,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      width: windowWidth - 40,
+      height : 200,
+      marginBottom : 20
+  
+  }
   });
   
   const formStyles = StyleSheet.create({
