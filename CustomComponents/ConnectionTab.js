@@ -26,10 +26,11 @@ import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 // the connection tab
 const ConnectionTabComponent = (props) => {
-    const appInfo = props.appInfoStore.getState()    
+    const appInfo = props.appInfoStore.getState()       
         if (appInfo.email_address != null) {
             // we have auth info      
             return (
+                // This shouln't be seen as the conneciton tab is only shown when we have no email address but..
                 <View style={connectionStyles.baseView}>
                     <StatusBar style = "dark"  />
                     <SafeAreaView>
@@ -38,6 +39,8 @@ const ConnectionTabComponent = (props) => {
                     <Text>Email Address: {appInfo.email_address}</Text>
                     <Text>Display Name: {appInfo.display_name}</Text>
                     <Text>JWT_Token: {appInfo.JWT_Token}</Text>
+                    <Text>System Role: {appInfo.int_SystemRole}</Text>
+                    <Text>Langauge: {appInfo.app_language}</Text>
                     <TouchableOpacity style={connectionStyles.appButtonContainer}
                         onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}>
                         <Text style={connectionStyles.appButtonText}>Refresh Details</Text>
@@ -54,11 +57,12 @@ const ConnectionTabComponent = (props) => {
                         <Text style={connectionStyles.welcomeText}> 
                         {getTranslatedMessage('not_logged_in', props.appInfoStore)}
                         </Text>
-                    
+                        <Text style={connectionStyles.welcomeText}> Auth via: {"\r\n"}{appInfo.api_details.api_server_url}</Text>
                         <TouchableOpacity activeOpacity = { .5 } 
                             onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}
                         > 
                             <Image source={require('../assets/google-signin-button.png')} style={connectionStyles.signInButton}/>          
+                            
                         </TouchableOpacity>
                     
                 </SafeAreaView>

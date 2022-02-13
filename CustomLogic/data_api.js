@@ -1,4 +1,5 @@
-export const getAllMyRequests = async (appInfo, callback) => {
+export const getAllMyRequests = async (appInfo, boolCompleted, callback) => {
+    console.log('boolCompleted in data api: ' + boolCompleted)
     const baseURL = getBaseURL(appInfo)
     var myRequestEndpoint = 'getMyRequests'
     var completeURL = baseURL + myRequestEndpoint
@@ -17,7 +18,7 @@ export const getAllMyRequests = async (appInfo, callback) => {
                     email_address: email_address
                 },
                 payload : {
-
+                    boolCompleted : boolCompleted,
                 }
             })//
         });
@@ -31,12 +32,82 @@ export const getAllMyRequests = async (appInfo, callback) => {
     }
 }
 
+export const getAllMyAssignedRequests = async (appInfo, boolCompleted, callback) => {
+    const baseURL = getBaseURL(appInfo)
+    var myRequestEndpoint = 'getAssignedRequests'
+    var completeURL = baseURL + myRequestEndpoint
+    var email_address = getEmailAddress(appInfo)
+    var JWT_Token = getJWTToken(appInfo)
+    try {
+        let response = await fetch(completeURL, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authentication' : 'Bearer ' + JWT_Token
+            },
+            body: JSON.stringify({
+                authObject : {
+                    email_address: email_address
+                },
+                payload : {
+                    boolCompleted : boolCompleted,
+                }
+            })//
+        });
+        
+        let json = await response.json();
+        callback(null, json)
+    } catch(err) {
+        console.log(err)
+        callback(err,null)
+        return err
+    }
+}
+
+
+export const getRequestRecordCounts = async (appInfo, boolCompleted, callback) => {
+    const baseURL = getBaseURL(appInfo)
+    var myRequestEndpoint = 'getRequestRecordCounts'
+    var completeURL = baseURL + myRequestEndpoint
+    var email_address = getEmailAddress(appInfo)
+    var JWT_Token = getJWTToken(appInfo)
+    try {
+        let response = await fetch(completeURL, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authentication' : 'Bearer ' + JWT_Token
+            },
+            body: JSON.stringify({
+                authObject : {
+                    email_address: email_address
+                },
+                payload : {
+                    boolCompleted : boolCompleted,
+                }
+            })//
+        });
+        
+        let json = await response.json();
+        callback(null, json)
+    } catch(err) {
+        console.log(err)
+        callback(err,null)
+        return err
+    }
+}
+
+
+
 export const createANewRequst = async (appInfo, 
                                         building,
                                         building_id,
                                         urgency,
                                         urgency_id, 
                                         description,
+                                        title,
                                         callback) => {
     const baseURL = getBaseURL(appInfo)
     var myRequestEndpoint = 'createARequest'
@@ -64,6 +135,7 @@ export const createANewRequst = async (appInfo,
                     urgency: urgency,
                     urgency_id: urgency_id,
                     description: description,
+                    title : title,
                     userDisplayName : appInfo.display_name
                 }
             })
@@ -116,6 +188,39 @@ export const getUrgencyList = async (appInfo, callback) => {
 export const getItemList = async (appInfo, callback) => {
     const baseURL = getBaseURL(appInfo)
     var myRequestEndpoint = 'getItems'
+    var completeURL = baseURL + myRequestEndpoint
+    var email_address = getEmailAddress(appInfo)
+    var JWT_Token = getJWTToken(appInfo)
+    try {
+        let response = await fetch(completeURL, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authentication' : 'Bearer ' + JWT_Token
+            },
+            body: JSON.stringify({
+                authObject : {
+                    email_address: email_address
+                },
+                payload : {
+
+                }
+            })//
+        });
+        
+        let json = await response.json();
+        callback(null, json)
+    } catch(err) {
+        console.log(err)
+        callback(err,null)
+        return err
+    }
+}
+
+export const getSystemRole = async (appInfo, callback) => {
+    const baseURL = getBaseURL(appInfo)
+    var myRequestEndpoint = 'getSystemRole'
     var completeURL = baseURL + myRequestEndpoint
     var email_address = getEmailAddress(appInfo)
     var JWT_Token = getJWTToken(appInfo)

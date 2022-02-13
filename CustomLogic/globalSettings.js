@@ -1,4 +1,5 @@
-export const forceDevCreditionals = true
+export const forceDevCreditionals = false
+export const force_settings_reload = true
 export const forced_dev_emailAdddress = 'jag@aiglon.ch'
 export const forced_dev_displayName = 'John Gerhardt'
 export const forced_dev_JWTToken = 'FORCED_DEV'
@@ -18,20 +19,21 @@ export const getCurrentActiveLanguage = (appInfoStore) => {
 // API URLs
 const api_server_url_testing = "http://jaglocaltesttemp.aiglon.ch:8080"
 const api_server_url_testing_no_auth = "http://192.168.1.128:8080"
-const api_server_url_prod = "https://webapp-googleclassroomadmin-staging.azurewebsites.net"
-const api_server_url = api_server_url_testing_no_auth
+const api_server_url_staging = "https://webapp-googleclassroomadmin-staging.azurewebsites.net"
+const api_server_url_prod = "https://googlesystemadmin.aiglon.ch"
+const api_server_url = api_server_url_prod
 const api_path = "/genericsolutions/estatesrequestsystem/mobile_api/"
 const authentication_endpoint = "authMobileDevice"
 
 export const defaultAppInfo = {
-    appInfo : {
       email_address : null,
       display_name : null,
       JWT_Token : null,
+      int_SystemRole : 0,
+      app_language : 'en',
       api_details :  {
             api_server_url : api_server_url,
             api_path : api_path,
             authentication_endpoint : authentication_endpoint
        }
-     }
-    }
+}

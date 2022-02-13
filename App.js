@@ -31,6 +31,7 @@ import {processAuthReturn, processAuthAtStartUp} from './CustomLogic/auth_api'
 export default function App() {
   // This state allows the application to be refresh when a use is authentication
   const [refreshValue, _setRefreshValue] = useState(false); 
+
   // As we pull the current logged on user from the secure storage we need to wait for it to return
   // to be able to have access to the data.
   const [readyToLoad, setReadyToLoad] = useState(false)

@@ -22,7 +22,7 @@ import {
   } from 'react-native';
 
 // custom Logic
-import {getAllMyRequests} from '../CustomLogic/data_api.js'
+import {getAllMyAssignedRequests} from '../CustomLogic/data_api.js'
 import { getCurrentActiveLanguage } from '../CustomLogic/globalSettings.js'
 
 // get global funciton for translation
@@ -34,8 +34,8 @@ import appInfoStore from '../CustomLogic/appInfoStore.js';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-// the connection tab
-const MyRequestsTabComponent = (props) => {
+// the assigned request tab
+const AssignedRequestTabComponent = (props) => {
   var appInfoStore = props.appInfoStore
   const appInfo = appInfoStore.getState()
   const navigation = useNavigation()
@@ -83,7 +83,7 @@ const MyRequestsTabComponent = (props) => {
         temp_boolComplete = 0
        }
        console.log('temp_boolComplete: ' + temp_boolComplete)
-        getAllMyRequests(appInfo, temp_boolComplete, function(err, api_return) {   
+       getAllMyAssignedRequests(appInfo, temp_boolComplete, function(err, api_return) {   
           if (err) {
           setErrorDetected(true)
           setErrorDetails(err.toString())
@@ -234,7 +234,7 @@ const MyRequestsTabComponent = (props) => {
 
     return (
       <View style={{height :40}}>
-        <Text style={{paddingLeft : 10, marginTop: 6,  fontSize : 15, fontWeight : "bold",}}>{getTranslatedMessage('my_requests_tab', props.appInfoStore)}</Text>
+        <Text style={{paddingLeft : 10, marginTop: 6,  fontSize : 15, fontWeight : "bold",}}>{getTranslatedMessage('assigned_requests_tab', props.appInfoStore)}</Text>
         
         <View style={{position:'absolute', right: 10, flexDirection : 'row'}}>
           <Text style={{marginRight: 10, marginTop: 6}}>{getTranslatedMessage('completed_requests', props.appInfoStore)}</Text>
@@ -455,7 +455,7 @@ text: {
 });
 
 // export the custom tab for later use
-export {MyRequestsTabComponent}
+export {AssignedRequestTabComponent}
 
 
 

@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 
+
 import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 import {
@@ -13,6 +14,7 @@ import {
   forced_dev_emailAdddress,
   forced_dev_displayName,
   forced_dev_JWTToken,
+  force_settings_reload,
 } from './globalSettings.js'
 
 import appInfoStore from './appInfoStore.js';
@@ -28,18 +30,22 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
     var platform = Platform.OS
     const authURL = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.authentication_endpoint
     if (forceDevCreditionals) {
+    
       Alert.alert(getTranslatedMessage('forced_dev', appInfoStore))
-        const api_details = defaultAppInfo.appInfo.api_details
-        console.log('defaultAppInfo: ' + JSON.stringify(api_details))
-      appInfoStore.dispatch({
+        
+      const api_details = defaultAppInfo.api_details
+        
+        appInfoStore.dispatch({
         type: "LOGIN",
         payload: { 
           email_address: forced_dev_emailAdddress, 
           display_name: forced_dev_displayName, 
           JWT_Token: forced_dev_JWTToken,
-          api_details : api_details,     
+          api_details : api_details,
+          int_SystemRole: 0,
         }
       });
+      
       // as we have some fake login data
       refreshMe()
     } else {
@@ -62,16 +68,18 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
             display_name: forced_dev_displayName, 
             JWT_Token: forced_dev_JWTToken,
             api_details : api_details, 
+            int_SystemRole: 0,
           }
         });  
         refreshMe()
       } else {
         const completeURL = authURL + '?returnURL=' + encodeURI(initialUrl)
+        console.log(completeURL)
         if(initialUrl) {
         
           Linking.openURL(completeURL)
         } else {
-          Alert.alert(getTranslatedMessage('url_failure',appInfoStore))
+          Alert.alert(getTranslatedMessage('url_failure', appInfoStore))
         }
         
       } 
@@ -121,6 +129,7 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
                   email_address: the_record.text_emailAddress, 
                   display_name: the_record.text_displayName,
                   JWT_Token: the_record.text_jwtToken,
+                  int_SystemRole: the_record.int_SystemRole,
                 }
               });
               
@@ -142,14 +151,68 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
 
 export async function processAuthAtStartUp(appInfoStore, setReadyToLoad) {
   var appInfoFromStorage = await getAppInfo()
-  appInfoStore.dispatch({
-    type: "STARTUP",
-    payload: { 
-      email_address: appInfoFromStorage.email_address, 
-      display_name: appInfoFromStorage.display_name,
-      JWT_Token: appInfoFromStorage.JWT_Token,
+  // If there is nothing in the app Info sotre then this is the first time the app launched - use the default
+  if (force_settings_reload) {  
+    const local_state = appInfoStore.getState()
+      const local_JWT_token = local_state.JWT_Token
+      const local_api_details = JSON.stringify(local_state.api_details)
+      const local_app_language = local_state.app_language 
+      const local_display_name = local_state.display_name
+      const local_email_address = local_state.email_address
+      const local_intSystemRole = local_state.int_SystemRole
+
+    const default_state = defaultAppInfo
+      const default_JWT_token = default_state.JWT_Token
+      const default_api_details = JSON.stringify(default_state.api_details)
+      const default_app_language = default_state.app_language 
+      const default_display_name = default_state.display_name
+      const default_email_address = default_state.email_address
+      const default_intSystemRole = default_state.int_SystemRole
+      
+      var changeFound = false
+      if (local_api_details != default_api_details) {
+        changeFound = true
+      }
+
+      if (local_app_language != default_app_language) {
+        changeFound = true
+      }
+
+      if (local_intSystemRole != default_intSystemRole) {
+        changeFound = true
+      }
+
+    if (changeFound) {
+  
+      console.log('cahnging state')
+      appInfoStore.dispatch({
+        type: "STARTUP",
+        payload: defaultAppInfo
+      });
+      setReadyToLoad()
+    } else {
+      console.log('Global Settings Default State macthes with current state for:')
+      console.log(local_api_details)
+      console.log('=')
+      console.log(default_api_details)
+      console.log('LANG: ' + local_app_language + ' = ' + default_app_language) 
+      console.log('ROLE: ' + local_intSystemRole + ' = ' + default_intSystemRole) 
+      
     }
-  });
+  }
+
+//  console.log('App Info State = processAuthAtStartUp: ' + JSON.stringify(appInfoStore.getState()))
+  if (appInfoFromStorage) {
+    appInfoStore.dispatch({
+      type: "STARTUP",
+      payload: appInfoFromStorage
+    });
+  } else {
+    appInfoStore.dispatch({
+      type: "STARTUP",
+      payload: defaultAppInfo
+    });
+  }
   setReadyToLoad(true)
   
 }

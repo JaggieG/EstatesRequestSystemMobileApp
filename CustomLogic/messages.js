@@ -6,7 +6,6 @@ import { getCurrentActiveLanguage } from './globalSettings.js'
 
 // helper function to return the correct message - used everywhere in application
 export const getTranslatedMessage = (withKey, appInfoStore) => {
-
     var currentActiveLanguage = getCurrentActiveLanguage(appInfoStore)
     try {
         var message = messages.allMessages[withKey][currentActiveLanguage]

@@ -56,6 +56,19 @@ const SettingsTabComponent = (props) => {
                                 <Text> {appInfo.JWT_Token}</Text>
                             </View>
 
+                             
+                            <View style={{flexDirection: 'row' }}>
+                                <Text style={{fontWeight : "bold"}}>Lang:</Text>
+                                <Text> {appInfo.app_language}</Text>
+                            </View>
+
+                            <View style={{flexDirection: 'row' }}>
+                                <Text style={{fontWeight : "bold"}}>System Role:</Text>
+                                <Text> {appInfo.int_SystemRole}</Text>
+                            </View>
+
+                    
+
                             
                             <View style={{flexDirection: 'row' }}>
                                 <Text style={{fontWeight : "bold"}}>api_server_url:</Text>
