@@ -26,26 +26,25 @@ import appInfoStore from './CustomLogic/appInfoStore'
 
 import {processAuthReturn, processAuthAtStartUp} from './CustomLogic/auth_api' 
 
-
-
 // Here is the main applicatoin
 export default function App() {
-  // This state allows the application to be refresh when a use is authentication
+  // This state allows the application to be refreshed when a user is authenticated
   const [refreshValue, _setRefreshValue] = useState(false); 
 
   // As we pull the current logged on user from the secure storage we need to wait for it to return
   // to be able to have access to the data.
   const [readyToLoad, setReadyToLoad] = useState(false)
-  processAuthAtStartUp(appInfoStore, setReadyToLoad)
-
+  
   const refreshMe = () => {
     _setRefreshValue(!refreshValue);
   };
 
-  
   useEffect(() => {
     // Listening for the return URL when authenticating, we pass the url along with the store and a refreshMe function to refresh the root
     // nav controller
+    processAuthAtStartUp(appInfoStore, function(readyToLoad) {
+      setReadyToLoad(readyToLoad)  
+    })
     
     Linking.addEventListener('url', function(url) {
       processAuthReturn(url, appInfoStore, refreshMe)

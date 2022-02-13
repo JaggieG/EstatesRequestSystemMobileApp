@@ -22,12 +22,23 @@ const windowHeight = Dimensions.get('window').height;
 
   // get global funciton for translation
   import { getTranslatedMessage } from '../CustomLogic/messages.js'
-
+ import { forced_dev_JWTToken } from '../CustomLogic/globalSettings'
 
 // the connection tab
 const SettingsTabComponent = (props) => {
     const appInfo = props.appInfoStore.getState()    
+            var JWT_exists = ''
+        if (appInfo.JWT_Token != null) {
+            if (appInfo.JWT_Token == forced_dev_JWTToken) {
+                JWT_exists = "valid - DEV mode"
+            } else {
+                JWT_exists = "valid"
+            }
+            
 
+        } else {
+            JWT_exists = "invalid"
+        }
             // we have auth info      
             return (
                 <View style={connectionStyles.baseView}>
@@ -53,7 +64,7 @@ const SettingsTabComponent = (props) => {
 
                             <View style={{flexDirection: 'row' }}>
                                 <Text style={{fontWeight : "bold"}}>JWT Token:</Text>
-                                <Text> {appInfo.JWT_Token}</Text>
+                                <Text> {JWT_exists}</Text>
                             </View>
 
                              

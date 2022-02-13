@@ -14,11 +14,12 @@ import {
   forced_dev_emailAdddress,
   forced_dev_displayName,
   forced_dev_JWTToken,
-  force_settings_reload,
+  force_dev_intSystemRole,
+  force_settings_reload_at_restart,
 } from './globalSettings.js'
 
 import appInfoStore from './appInfoStore.js';
-import { getAppInfo } from './storage';
+import { getAppInfo, clearStorage } from './storage';
 
 import { defaultAppInfo } from './globalSettings';
 
@@ -28,6 +29,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
   Linking.getInitialURL().then(function(initialUrl) {
     
     var platform = Platform.OS
+
     const authURL = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.authentication_endpoint
     if (forceDevCreditionals) {
     
@@ -42,7 +44,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
           display_name: forced_dev_displayName, 
           JWT_Token: forced_dev_JWTToken,
           api_details : api_details,
-          int_SystemRole: 0,
+          int_SystemRole: force_dev_intSystemRole,
         }
       });
       
@@ -52,7 +54,6 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
       if (initialUrl.indexOf("?")>-1){
         initialUrl = initialUrl.substring(0,initialUrl.indexOf("?"));
         }
-
 
       if (platform == 'web') {
         // We need to make an http call rather than a deep link
@@ -68,7 +69,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
             display_name: forced_dev_displayName, 
             JWT_Token: forced_dev_JWTToken,
             api_details : api_details, 
-            int_SystemRole: 0,
+            int_SystemRole: force_dev_intSystemRole,
           }
         });  
         refreshMe()
@@ -92,8 +93,6 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
   const url = url_.url
   if (url) {
     if (url.indexOf("?retrieval_token") !== -1) {
-
-
         // now we have a  retreiva token we have 1 minute to use to to get our JWT token. We post it to the endpoint for security
         var regex = /[?&]([^=#]+)=([^&#]*)/g,
         params = {},
@@ -104,7 +103,7 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
 
         const appInfo = appStoreInfo.getState()
         const retrieval_url = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.retrieval_endpoint
-    
+          console.log(url)
         fetch(retrieval_url, {
           method: 'POST',
           headers: {
@@ -116,7 +115,7 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
           })
         }).then((response) => response.json())
           .then((json) => {
-            //console.log(json)
+            console.log(json)
             var record_count = json.record_count
 
             if (record_count == 0) {
@@ -135,10 +134,6 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
               
               
             }
-
-            
-            
-           
             refreshMe()
           })
           .catch((error) => {
@@ -149,12 +144,12 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
       }
 }
 
-export async function processAuthAtStartUp(appInfoStore, setReadyToLoad) {
-  
+export async function processAuthAtStartUp(appInfoStore, callback) {
+ 
   var appInfoFromStorage = await getAppInfo()
-  
-  // If there is nothing in the app Info sotre then this is the first time the app launched - use the default
-  if (force_settings_reload) {  
+ 
+  // If there is nothing in the app Info Store then this is the first time the app launched - use the default
+  if (force_settings_reload_at_restart) {  
     const local_state = appInfoStore.getState()
       const local_JWT_token = local_state.JWT_Token
       const local_api_details = JSON.stringify(local_state.api_details)
@@ -183,38 +178,36 @@ export async function processAuthAtStartUp(appInfoStore, setReadyToLoad) {
       if (local_intSystemRole != default_intSystemRole) {
         changeFound = true
       }
-
+    
     if (changeFound) {
-  
-      console.log('cahnging state')
       appInfoStore.dispatch({
         type: "STARTUP",
         payload: defaultAppInfo
       });
-      setReadyToLoad()
+      callback(true)
     } else {
-      console.log('Global Settings Default State macthes with current state for:')
-      console.log(local_api_details)
-      console.log('=')
-      console.log(default_api_details)
-      console.log('LANG: ' + local_app_language + ' = ' + default_app_language) 
-      console.log('ROLE: ' + local_intSystemRole + ' = ' + default_intSystemRole) 
+      callback(true)
+      // console.log('Global Settings Default State macthes with current state for:')
+      // console.log(local_api_details)
+      // console.log('=')
+      // console.log(default_api_details)
+      // console.log('LANG: ' + local_app_language + ' = ' + default_app_language) 
+      // console.log('ROLE: ' + local_intSystemRole + ' = ' + default_intSystemRole) 
       
     }
-  }
-
-//  console.log('App Info State = processAuthAtStartUp: ' + JSON.stringify(appInfoStore.getState()))
-  if (appInfoFromStorage) {
-    appInfoStore.dispatch({
-      type: "STARTUP",
-      payload: appInfoFromStorage
-    });
+    
   } else {
-    appInfoStore.dispatch({
-      type: "STARTUP",
-      payload: defaultAppInfo
-    });
-  }
-  setReadyToLoad(true)
-  
+        if (appInfoFromStorage) {
+            appInfoStore.dispatch({
+              type: "STARTUP",
+              payload: appInfoFromStorage
+            });
+          } else {
+            appInfoStore.dispatch({
+              type: "STARTUP",
+              payload: defaultAppInfo
+            });
+          }
+          callback(true)
+    }
 }

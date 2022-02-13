@@ -1,5 +1,4 @@
 export const getAllMyRequests = async (appInfo, boolCompleted, callback) => {
-    console.log('boolCompleted in data api: ' + boolCompleted)
     const baseURL = getBaseURL(appInfo)
     var myRequestEndpoint = 'getMyRequests'
     var completeURL = baseURL + myRequestEndpoint
@@ -65,6 +64,38 @@ export const getAllMyAssignedRequests = async (appInfo, boolCompleted, callback)
     }
 }
 
+export const closeRequestWithId = async (appInfo, request_id, callback) => {
+    const baseURL = getBaseURL(appInfo)
+    var myRequestEndpoint = 'closeRequest'
+    var completeURL = baseURL + myRequestEndpoint
+    var email_address = getEmailAddress(appInfo)
+    var JWT_Token = getJWTToken(appInfo)
+    try {
+        let response = await fetch(completeURL, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authentication' : 'Bearer ' + JWT_Token
+            },
+            body: JSON.stringify({
+                authObject : {
+                    email_address: email_address
+                },
+                payload : {
+                    request_id : request_id,
+                }
+            })//
+        });
+        
+        let json = await response.json();
+        callback(null, json)
+    } catch(err) {
+        console.log(err)
+        callback(err,null)
+        return err
+    }
+}
 
 export const getRequestRecordCounts = async (appInfo, boolCompleted, callback) => {
     const baseURL = getBaseURL(appInfo)

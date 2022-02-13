@@ -96,6 +96,55 @@
             "fr" : "Desc Francais"
         },
 
+        "submitted_data_time" : {
+            "en" : "Submitted @",
+            "fr" : "Creer a"
+        },
+
+        "creator_email" : {
+            "en" : "Creator Email",
+            "fr" : "Creator Email a"
+        },
+
+        "creator_name" : {
+            "en" : "Creator Name",
+            "fr" : "Creator Name"
+        },
+        
+        
+        "assigned_to_email" : {
+            "en" : "Assigned to Email",
+            "fr" : "Assigner a Emile"
+        },
+        
+        "completed" : {
+            "en" : "Completed?",
+            "fr" : "Fini?"
+        },
+
+        "close_request" : {
+            "en" : "Close Request",
+            "fr" : "Ferme Requete"
+        },
+
+        "yes" : {
+            "en" : "Yes",
+            "fr" : "Oui"
+        },
+        "no" : {
+            "en" : "No",
+            "fr" : "Non"
+        },
+    
+        "sure_close" : {
+            "en" : "Are you sure you want to close this request?",
+            "fr" : "Est-ce que vous etes sur que vous voulez fermer cette requete?"
+        },
+
+        
+
+        
+
         
 
         "no_records_found" : {
@@ -113,6 +162,11 @@
         "submit" : {
             "en" : "Send",
             "fr" : "Envoyer"
+        },
+
+        "hide_modal" : {
+            "en" : "OK",
+            "fr" : "OK"
         },
 
 

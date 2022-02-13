@@ -7,22 +7,27 @@ import { defaultAppInfo } from './globalSettings'
 
 
 export async function updateAppInfo(appInfo) {
-    await storeData(store_key, JSON.stringify(appInfo))
+  try {
+    var parsedJSON = JSON.parse(appInfo)
+    var stringify = appInfo
+  } catch(err) {
+    stringify = JSON.stringify(appInfo)
+  }
+    await storeData(store_key, stringify)
     return true
 }
 
+
+
 export async function getAppInfo() {
-  //await clearAsyncStorage()//
 
   var appInfo = await getData(store_key)
-  console.log('appInfo: ' + appInfo)
     if (appInfo) {
         return JSON.parse(appInfo)
     } else {
         var stored = await updateAppInfo(defaultAppInfo)
         if (stored) {
           var appInfo = await getData(store_key)
-          console.log(appInfo)
           return JSON.parse(appInfo)  
         }
     }
@@ -50,6 +55,6 @@ const getData = async (key) => {
     }
 }
 
-const clearAsyncStorage = async() => {
+export const clearStorage = async() => {
   AsyncStorage.clear();
 }

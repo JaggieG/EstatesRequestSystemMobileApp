@@ -27,6 +27,7 @@
     "react-native": "0.64.3",
     "react-native-app-auth": "^6.4.1",
     "react-native-gesture-handler": "^2.1.1",
+    "react-native-modalbox": "^2.0.2",
     "react-native-safe-area-context": "3.3.2",
     "react-native-safe-area-view": "^1.1.1",
     "react-native-screens": "^3.10.2",

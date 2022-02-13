@@ -1,6 +1,6 @@
 // react status bar
 import { StatusBar } from 'expo-status-bar';
-import React, {useContext } from 'react';
+import React, {useContext,useState } from 'react';
 
 //standard react ocmponents
 import { 
@@ -26,7 +26,9 @@ import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 // the connection tab
 const ConnectionTabComponent = (props) => {
-    const appInfo = props.appInfoStore.getState()       
+    //const appInfo = props.appInfoStore.getState()  
+    const [appInfo, setAppInfo] = useState(props.appInfoStore.getState()  )//
+  
         if (appInfo.email_address != null) {
             // we have auth info      
             return (
@@ -78,6 +80,8 @@ const connectionStyles = StyleSheet.create({
     },
     signInButton : {
         width : windowWidth - 20,
+        height: windowHeight / 10,
+        marginTop : 10,
         resizeMode : "contain",
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -98,7 +102,10 @@ const connectionStyles = StyleSheet.create({
         alignItems: 'center' ,
         marginLeft: 'auto',
         marginRight: 'auto',
+        resizeMode : "contain",
         marginTop : 30,
+        height: windowHeight / 10,
+        width : windowWidth - 100,
     }
 })
 

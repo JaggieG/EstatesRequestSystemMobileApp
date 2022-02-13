@@ -18,6 +18,7 @@ import {
     Alert,
     Image,
     Pressable,
+    Modal,
     Switch,
   } from 'react-native';
 
@@ -29,7 +30,6 @@ import { getCurrentActiveLanguage } from '../CustomLogic/globalSettings.js'
 import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
-import appInfoStore from '../CustomLogic/appInfoStore.js';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -48,42 +48,21 @@ const MyRequestsTabComponent = (props) => {
 
   const [myRequests, setMyRequests] = useState('LOADING')
 
-  const [activeRequstType, setActiveRequestType] = useState('MY_REQS')
 
-  // get the role of the user in the system
-  const [systemRole, setSystemRole] = useState(0)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState({})
+
 
     // Switch controls
 
     const [boolCompleted, setBoolCompleted] = useState(false);
     const toggleSwitch = () => {
-      setBoolCompleted(previousState => !previousState);
-      showRequests(navigation, appInfoStore)
+      setBoolCompleted(!boolCompleted) 
     }
     
-    const showRequests = (navigation, appInfoStore) => {    
-      if (systemRole == 0) {
-        setActiveRequestType('MY_REQS')
-        getRequiredData(appInfo)
-      } else {
-        setActiveRequestType('MY_ASSIGNED_REQS')
-        getRequiredData(appInfo)
-      }
-    }
-
-    const getRequiredData = (appInfo) => {
+    const getRequiredData = () => {
        setRefreshing(true);
-     
-      // var temp_boolComplete = 0 // boolCompleted == 0 ? 1 : 0
-       //need to swap as we get true and false and our text logic is the other way around!
-       console.log('before call boolCompleted: ' + boolCompleted)
-       if (boolCompleted) {
-        temp_boolComplete = 1
-       } else {
-        temp_boolComplete = 0
-       }
-       console.log('temp_boolComplete: ' + temp_boolComplete)
-        getAllMyRequests(appInfo, temp_boolComplete, function(err, api_return) {   
+        getAllMyRequests(appInfo, boolCompleted, function(err, api_return) {   
           if (err) {
           setErrorDetected(true)
           setErrorDetails(err.toString())
@@ -98,15 +77,16 @@ const MyRequestsTabComponent = (props) => {
     }
 
     const onRefresh = React.useCallback(() => {
-      showRequests(navigation, appInfo)
+      getRequiredData()
     }, []);
 
     useEffect(() => {
+      getRequiredData()
       const unsubscribe = navigation.addListener('focus', () => {
-        showRequests(navigation, appInfo)
+        getRequiredData()
       });
       return unsubscribe;
-    }, []);
+    }, [boolCompleted]);
     
     if (errorDetected) {
       return (
@@ -161,7 +141,7 @@ const MyRequestsTabComponent = (props) => {
                   }>
           
                     <TableView style={{backgroundColor : "#FFF"}}>
-                    <Section headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
+                    <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
                         <View style={customCellStyles.noRecordBubble}>
                           <Text>{getTranslatedMessage('no_records_found', appInfoStore)}</Text>
                       </View>
@@ -183,8 +163,80 @@ const MyRequestsTabComponent = (props) => {
             
             
               <View style={styles.container}>
-              <StatusBar style = "dark"  />
+
+            <StatusBar style = "dark"  />
                 <SafeAreaView style={styles.mainView}>
+                  <Modal
+                          animationType="slide"
+                          transparent={true}
+                          visible={modalVisible}
+                          onRequestClose={() => {
+                            
+                            setModalVisible(!modalVisible);
+                          }}
+                        >
+                          <View style={modalStyles.centeredView}>
+                            <View style={modalStyles.modalView}>
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('make_request_building', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.text_building}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('submitted_data_time', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{formatDateTimeNicely(appInfoStore,modalContent.date_submittedDateTime,)}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('make_request_urgency', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.int_urgency}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('desc_fr', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.text_frenchDesc}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('desc_en', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.text_englishDesc}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('creator_email', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.text_requesterEmail}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('creator_name', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.text_requesterName}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('assigned_to', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.text_assignedTo}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('assigned_to_email', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.text_assignee_emailaddress}</Text>
+                              </View>
+
+                              <View style={{flexDirection : "row"}}>
+                                <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('completed', appInfoStore)} : </Text>
+                                <Text style={modalStyles.modalText}>{modalContent.bool_complete ? getTranslatedMessage('yes', appInfoStore) : getTranslatedMessage('no', appInfoStore)} {modalContent.bool_complete}</Text>
+                              </View>
+
+                              <Pressable
+                                style={[modalStyles.button, modalStyles.buttonClose]}
+                                onPress={() => setModalVisible(!modalVisible)}
+                              >
+                                <Text style={modalStyles.textStyle}>{getTranslatedMessage('hide_modal', appInfoStore)}</Text>
+                              </Pressable>
+                            </View>
+                          </View>
+                        </Modal>
+
                   <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
                     refreshControl={
                       <RefreshControl
@@ -193,19 +245,18 @@ const MyRequestsTabComponent = (props) => {
                       />
                     }>
                       <TableView style={{backgroundColor : "#FFF"}}>
-                      <Section  headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch} />}>
+                      <Section  sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch} />}>
                           {myRequests.data.map((item, i) => (
                                 <RequestCustomCell 
                                 {...props}
                                 key ={i.toString()}
+                                iterator = {i}
                                 onPress={() => {
-                                  var alertMessage = ''
-                                  alertMessage += getTranslatedMessage('assigned_to', appInfoStore) + ':  ' + item.text_assignedTo
-                                  alertMessage += '\r\n'
-                                  alertMessage += getTranslatedMessage('desc_en', appInfoStore) + ':  ' + item.text_englishDesc
-                                  alertMessage += '\r\n'
-                                  alertMessage += getTranslatedMessage('desc_fr', appInfoStore) + ':  ' + item.text_frenchhDesc
-                                  Alert.alert(alertMessage)
+                                  setModalContent(item)
+                                  setModalVisible(!modalVisible)
+                                }}
+                                onPressDetailAccessory={() => {
+                                  setModalVisible(!modalVisible)
                                 }}
                                 title= {item.text_requestTitle}
                                 submittedDateTime={item.date_submittedDateTime}
@@ -234,7 +285,7 @@ const MyRequestsTabComponent = (props) => {
 
     return (
       <View style={{height :40}}>
-        <Text style={{paddingLeft : 10, marginTop: 6,  fontSize : 15, fontWeight : "bold",}}>{getTranslatedMessage('my_requests_tab', props.appInfoStore)}</Text>
+        
         
         <View style={{position:'absolute', right: 10, flexDirection : 'row'}}>
           <Text style={{marginRight: 10, marginTop: 6}}>{getTranslatedMessage('completed_requests', props.appInfoStore)}</Text>
@@ -259,11 +310,12 @@ const MyRequestsTabComponent = (props) => {
       var title = props.title
     }
     return (
-        <Cell key={props.id}
+        <Cell key={props.iterator}
           {...props}//
-          backgroundColor= "#FFF"
+          accessory = "DisclosureIndicator"
+          backgroundColor= {props.iterator % 2 == 0 ? "#ffff" : "#f4f3f4"}
           cellContentView = {
-            <View style={{width: "100%", height: 100} }>
+            <View style={{width: "95%", height: 100} }>
 
               <View style={customCellStyles.titleBubble}>
                 <Text>{title}</Text>
@@ -272,7 +324,6 @@ const MyRequestsTabComponent = (props) => {
               <View style={customCellStyles.timeBubble}>
                  <Text>{formatDateTimeNicely(props.appInfoStore, props.submittedDateTime)}</Text>
               </View>
-              
               
               
               <View style={customCellStyles.urgencyBubble}>
@@ -337,23 +388,7 @@ const MyRequestsTabComponent = (props) => {
   
   }
   });
-  
-  const other = StyleSheet.create({
-    body: {
-      backgroundColor: "#FFFFFF",
-    },
-    socialBtn: {
-      margin: 30,
-      backgroundColor: '#1f5c9e',
-      paddingVertical: 10,
-    },
-    buttonText: {
-      color: '#000',
-      fontWeight: 'bold',
-      textAlign: 'center'
-    },
-   });
-
+ 
 
   const customCellStyles = StyleSheet.create({
     generalView : {
@@ -426,32 +461,53 @@ const MyRequestsTabComponent = (props) => {
     
 });
 
-const buttons = StyleSheet.create({
-  buttonContainer : {
-    flexDirection : 'row',
-    paddingLeft: 10,
-    paddingRight: 10,
+const modalStyles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
   },
-button: {
-  width : (windowWidth / 2) -20,
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingVertical: 12,
-  paddingHorizontal: 32,
-  borderRadius: 4,
-  elevation: 3,
-  backgroundColor: '#47C46F',
-  marginTop : 10,
-  marginLeft: 10
-  
-},
-text: {
-  fontSize: 16,
-  lineHeight: 21,
-  fontWeight: 'bold',
-  letterSpacing: 0.25,
-  color: 'white',
-},
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  modalText: {
+    marginBottom: 15,
+  },
+  modalTextTitle : {
+    marginBottom: 15,
+    fontWeight : 'bold'
+  }
 });
 
 // export the custom tab for later use

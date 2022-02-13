@@ -254,7 +254,7 @@ const MakeARequestTabComponent = (props) => {
                     buttonStyle={formStyles.dropdownBtnStyle}
                     buttonTextStyle={formStyles.dropdownBtnTxtStyle}
                     onSelect={(selectedItem, index) => {
-                      console.log(selectedItem, index)
+  
                       onChangeUrgencyText(selectedItem)
                       onChangeUrgencyId(index)
                     }}

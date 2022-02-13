@@ -32,3 +32,7 @@ async function save(key, value) {
         return JSON.parse(result)
     }
   }
+
+  export const clearStorage = async() => {
+   //No equialvant
+  }

@@ -113,7 +113,7 @@ const CustomTabNavigatorComponent = (props) => {
               children={()=><MakeARequestTabScreenComponent {...props}/>}
             />
             
-            {appInfo.int_SystemRole == 0 &&
+            {appInfo.int_SystemRole > 0 &&
                 <Tab.Screen 
                   name={getTranslatedMessage('assigned_requests_tab', appInfoStore)} 
                   options={{ tabBarBadge: myOpenAssignedRequests }}
