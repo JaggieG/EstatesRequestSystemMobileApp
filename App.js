@@ -3,7 +3,6 @@ import {
   Dimensions, 
   Linking,
   View,
-  Text,
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
@@ -18,15 +17,12 @@ const windowHeight = Dimensions.get('window').height;
 
 // Custom Components Info
 import { CustomTabNavigatorComponent } from './CustomComponents/TabNavigator'
-//import {ErrorView} from './CustomComponents/ErrorView'
 
 //custom logic
-
 import appInfoStore from './CustomLogic/appInfoStore'
-
 import {processAuthReturn, processAuthAtStartUp} from './CustomLogic/auth_api' 
 
-// Here is the main applicatoin
+// Here is the main application
 export default function App() {
   // This state allows the application to be refreshed when a user is authenticated
   const [refreshValue, _setRefreshValue] = useState(false); 
@@ -52,26 +48,23 @@ export default function App() {
   }, []);
 
   if (readyToLoad) {
+    // simple top level application
     return (
-
       <NavigationContainer refreshValue={refreshValue}>
          <CustomTabNavigatorComponent appInfoStore={appInfoStore} refreshMe={refreshMe}></CustomTabNavigatorComponent>
       </NavigationContainer>
-    
-  );
+    );
   } else {
-    // this is so quick that probably willnever be seen, but put an activity indicator to be nice!
+    // this is so quick that probably will never be seen, but put an activity indicator to be nice!
     return (
-
       <View style={baseStyles.baseView}>
           <ActivityIndicator size="large" />
       </View>
-    
-  );
+    );
   }
-   
 }
 
+// Styles
 const baseStyles = StyleSheet.create({
   baseView : {
       flex: 1, 

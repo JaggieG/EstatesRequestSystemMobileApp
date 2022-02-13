@@ -1,12 +1,13 @@
 
 
-// react status bar
+// import react components
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useEffect,useRef } from 'react';
+import React, {useState, useEffect } from 'react';
 
-
+// get the nvaigation stack if we have to move from one tab to the next
 import { useNavigation } from '@react-navigation/native';
-//standard react ocmponents
+
+//standard react components
 import { 
     Text, 
     View, 
@@ -23,6 +24,8 @@ import {
     Pressable,
   } from 'react-native';
 
+ import { Cell, Section, TableView } from 'react-native-tableview-simple';
+
 // custom Logic
 import {getAllMyAssignedRequests, closeRequestWithId} from '../CustomLogic/data_api.js'
 import { getCurrentActiveLanguage } from '../CustomLogic/globalSettings.js'
@@ -30,250 +33,223 @@ import { getCurrentActiveLanguage } from '../CustomLogic/globalSettings.js'
 // get global funciton for translation
 import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
-import { Cell, Section, TableView } from 'react-native-tableview-simple';
-
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 // the connection tab
 const AssignedRequestTabComponent = (props) => {
+  // get variable from the props that we need to update and control the component
   var appInfoStore = props.appInfoStore
+  const updateBadges = props.updateBadges
+
+
   const appInfo = appInfoStore.getState()
   const navigation = useNavigation()
   
+  // states of the modals so that we can show and hide them!
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({})
-  // get some base information about the user and therefore waht to display
-
+  
+  // get some base information about the user and therefore what  to display
   const [refreshing, setRefreshing] = useState(false);
   const [errorDetected, setErrorDetected] = useState(false)
   const [errorDetails, setErrorDetails] = useState('')
 
+  // holds the request to show
   const [myRequests, setMyRequests] = useState('LOADING')
 
-    // Switch controls
+  // switch controls to show completed requests or not
+  const [boolCompleted, setBoolCompleted] = useState(false);
+  const toggleSwitch = () => {
+    // easy toggle helper
+    setBoolCompleted(!boolCompleted) 
+  }
 
-    const [boolCompleted, setBoolCompleted] = useState(false);
-    const toggleSwitch = () => {
-      setBoolCompleted(!boolCompleted) 
-    }
-
-    const closeRequest = (request_id) => {
-      setModalVisible(!modalVisible)
-      Alert.alert(
-        getTranslatedMessage('sure_close', appInfoStore),
-        "",
-        [
-          // The "Yes" button
-          {
-            text: "Yes",
-            onPress: () => {
-              closeRequestWithId(appInfo, request_id, function(err, api_return) { 
-                if (err) {
-                    Alert.alert(err.toString())
-                    setRefreshing(false);
-                  } else {
-                    getAllMyAssignedRequests(appInfo, boolCompleted, function(err, api_return) {   
-                      if (err) {
-                        setErrorDetected(true)
-                        setErrorDetails(err.toString())
-                        setRefreshing(false);
-                      } else {
-                        setErrorDetected(false)
-                        setErrorDetails('')
-                        setMyRequests(api_return)
-                        setRefreshing(false)
-                      }
-                  })
-                  }
-              })
-            },
+  // function that closes a request using a request id
+  const closeRequest = (request_id) => {
+    setModalVisible(!modalVisible) // hide the modal
+    // we need to make sure that users is sure!
+    Alert.alert(getTranslatedMessage('sure_close', appInfoStore), "",
+      [
+        {
+          text: getTranslatedMessage('yes', appInfoStore),
+          onPress: () => {
+            // they are sure - we can tell the API to close this request.
+            closeRequestWithId(appInfo, request_id, function(err, api_return) { 
+              if (err) {
+                  Alert.alert(err.toString())
+                  setRefreshing(false);
+              } else {
+                  getAllMyAssignedRequests(appInfo, boolCompleted, function(err, api_return) {   
+                    if (err) {
+                      setErrorDetected(true)
+                      setErrorDetails(err.toString())
+                      setRefreshing(false);
+                    } else {
+                      setErrorDetected(false)
+                      setErrorDetails('')
+                      setMyRequests(api_return)
+                      setRefreshing(false)
+                    }
+                 })
+              }
+            })
           },
-          // The "No" button
-          // Does nothing but dismiss the dialog when tapped
-          {
-            text: "No",
-          },
-        ]
-      );
-
-      
+        },
+        {
+          text: getTranslatedMessage('no', appInfoStore),
+        },
+      ]
+    );
+  }
     
-      
-    }
-    
-    const getRequiredData = () => {
-       setRefreshing(true);
-        getAllMyAssignedRequests(appInfo, boolCompleted, function(err, api_return) {   
-          if (err) {
+  // function to go and get the data that we need for the component
+  const getRequiredData = () => {
+      setRefreshing(true); // show the spinner
+      getAllMyAssignedRequests(appInfo, boolCompleted, function(err, api_return) {   
+        if (err) {
           setErrorDetected(true)
           setErrorDetails(err.toString())
           setRefreshing(false);
-          } else {
-            setErrorDetected(false)
-            setErrorDetails('')
-            setMyRequests(api_return)
-            setRefreshing(false)
-          }
-      })
-    }
+        } else {
+          setErrorDetected(false)
+          setErrorDetails('')
+          setMyRequests(api_return)
+          setRefreshing(false)
+        }
+    })
+  }
 
+  // this is called when we refresh the application
+  const onRefresh = React.useCallback(() => {
+    updateBadges()
+    getRequiredData()
+  }, []);
 
-    const onRefresh = React.useCallback(() => {
+  //use Effect run when the component load - relies on the boolComplete
+  useEffect(() => {
+    getRequiredData()
+    const unsubscribe = navigation.addListener('focus', () => {
+      updateBadges()
       getRequiredData()
-    }, []);
-
-    useEffect(() => {
-      getRequiredData()
-      const unsubscribe = navigation.addListener('focus', () => {
-        getRequiredData()
-      });
-      return unsubscribe;
-    }, [boolCompleted]);
-    
-    if (errorDetected) {
-      return (
-        <View style={styles.container}>
-        <StatusBar style = "dark"  />
-        <SafeAreaView style={{height:"100%", backgroundColor: "#FFF"}}>
-        <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
-                    refreshControl={
-                      <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                      />
-                    }>
-          <View style={styles.mainView}>
-          <Image source={require('../assets/error.jpg')}  style={[styles.errorImage]}/> 
-          
-          
-            <Text>{getTranslatedMessage('generic_error', props.appInfoStore)}</Text>
-            <Text>{errorDetails}</Text>
-            </View> 
-          </ScrollView>
-        </SafeAreaView>
-      </View>
-      )
-    } else {
-
-    if (myRequests == 'LOADING') {
-      return (
-        <View style={styles.container}>
-        <StatusBar style = "dark"  />
-        <SafeAreaView style={styles.mainView}>
-            <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
-              <ActivityIndicator size="large" color="#0000ff"  />
-            </ScrollView>
+    });
+    return unsubscribe;
+  }, [boolCompleted]);
+  
+  // if there is an error detected then we should show the error view!
+  if (errorDetected) {
+    return (
+          <View style={styles.container}>
+            <StatusBar style = "dark"  />
+            <SafeAreaView style={{height:"100%", backgroundColor: "#FFF"}}>
+              <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
+                  refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                  <View style={styles.mainView}>
+                    <Image source={require('../assets/error.jpg')}  style={[styles.errorImage]}/> 
+                    <Text>{getTranslatedMessage('generic_error', props.appInfoStore)}</Text>
+                    <Text>{errorDetails}</Text>
+                  </View> 
+              </ScrollView>
             </SafeAreaView>
-        </View>
+          </View>
       )
     } else {
-
-      
+      // no error but we are waiting for the data
+      if (myRequests == 'LOADING') {
+        return (
+          <View style={styles.container}>
+             <StatusBar style = "dark"  />
+               <SafeAreaView style={styles.mainView}>
+                  <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
+                    <View>
+                      <ActivityIndicator size="large" color="#0000ff"  />
+                    </View>
+                   </ScrollView>
+              </SafeAreaView>
+          </View>
+        )
+      } else {
+          // data is loaded
         if (myRequests.record_count == 0) {
           return (
             <View style={styles.container}>
-            <StatusBar style = "dark"  />
-              <SafeAreaView style={styles.mainView}>
-                <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={refreshing}
-                      onRefresh={onRefresh}
-                    />
-                  }>
-          
-                    <TableView style={{backgroundColor : "#FFF"}}>
-                    <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
-                        <View style={customCellStyles.noRecordBubble}>
-                          <Text>{getTranslatedMessage('no_records_found', appInfoStore)}</Text>
-                      </View>
-                    
-                    </Section>
-                </TableView>
-                {/* <Text>{JSON.stringify(myRequests)}</Text> */}
-              
-        
-            </ScrollView>
-        </SafeAreaView>
-        </View>
-
-
+               <StatusBar style = "dark"  />
+                  <SafeAreaView style={styles.mainView}>
+                    <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
+                        refreshControl={<RefreshControl  refreshing={refreshing} onRefresh={onRefresh} />}>
+                      <TableView style={{backgroundColor : "#FFF"}}>
+                        <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
+                          <View style={customCellStyles.noRecordBubble}>
+                            <Text>{getTranslatedMessage('no_records_found', appInfoStore)}</Text>
+                          </View>
+                        </Section>
+                      </TableView>
+                    </ScrollView>
+                  </SafeAreaView>
+              </View>
           )
         } else {
+          // MAIN AREA - we have data!
           return (
-
-          
               <View style={styles.container}>
-
-<StatusBar style = "dark"  />
-                <SafeAreaView style={styles.mainView}>
-                  <Modal
-                          animationType="slide"
-                          transparent={true}
-                          visible={modalVisible}
-                          onRequestClose={() => {
-                            Alert.alert("Modal has been closed.");
-                            setModalVisible(!modalVisible);
-                          }}
-                        >
+                <StatusBar style = "dark"  />
+                    <SafeAreaView style={styles.mainView}>
+                      {/* This is the modal that will be shown - is hidden is not made visible */}
+                          <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={modalVisible}
+                            onRequestClose={() => { 
+                              Alert.alert("Modal has been closed.");
+                              setModalVisible(!modalVisible);
+                            }}
+                          >
                           <View style={modalStyles.centeredView}>
                             <View style={modalStyles.modalView}>
-                            <View style={{flexDirection : "row"}}>
+                              <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('make_request_building', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.text_building}</Text>
                               </View>
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('submitted_data_time', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{formatDateTimeNicely(appInfoStore,modalContent.date_submittedDateTime,)}</Text>
                               </View>
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('make_request_urgency', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.int_urgency}</Text>
                               </View>
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('desc_fr', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.text_frenchDesc}</Text>
                               </View>
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('desc_en', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.text_englishDesc}</Text>
                               </View>
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('creator_email', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.text_requesterEmail}</Text>
                               </View>
-
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('creator_name', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.text_requesterName}</Text>
                               </View>
-
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('assigned_to', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.text_assignedTo}</Text>
                               </View>
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('assigned_to_email', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.text_assignee_emailaddress}</Text>
                               </View>
-
                               <View style={{flexDirection : "row"}}>
                                 <Text style={modalStyles.modalTextTitle}>{getTranslatedMessage('completed', appInfoStore)} : </Text>
                                 <Text style={modalStyles.modalText}>{modalContent.bool_complete ? getTranslatedMessage('yes', appInfoStore) : getTranslatedMessage('no', appInfoStore)} {modalContent.bool_complete}</Text>
                               </View>
-                              
-                                 <Pressable style={[styles.button, styles.buttonClose]} onPress={() => setModalVisible(!modalVisible)}>
-                                      <Text style={modalStyles.textStyle}>{getTranslatedMessage('hide_modal', appInfoStore)}</Text>
-                                </Pressable>
+                                <Pressable style={[styles.button, styles.buttonClose]} onPress={() => setModalVisible(!modalVisible)}>
+                                    <Text style={modalStyles.textStyle}>{getTranslatedMessage('hide_modal', appInfoStore)}</Text>
+                              </Pressable>
+                              {/* Only show Close if the request is open! */}
                                 { modalContent.bool_complete == 0 &&
                                 <Pressable style={[styles.button, styles.buttonClose]} onPress={() => closeRequest(modalContent.request_id)}>
                                       <Text style={modalStyles.textStyle}>{getTranslatedMessage('close_request', appInfoStore)}</Text>
@@ -282,17 +258,10 @@ const AssignedRequestTabComponent = (props) => {
                             </View>
                           </View>
                         </Modal>
-
-
-
+                  {/* The rest of the page */}
                   <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
-                    refreshControl={
-                      <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                      />
-                    }>
-                      <TableView style={{backgroundColor : "#FFF"}}>
+                           refreshControl={<RefreshControl efreshing={refreshing} onRefresh={onRefresh} /> }>
+                    <TableView style={{backgroundColor : "#FFF"}}>
                       <Section  sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch} />}>
                           {myRequests.data.map((item, i) => (
                                 <RequestCustomCell 
@@ -313,43 +282,39 @@ const AssignedRequestTabComponent = (props) => {
                           ))}
                       </Section>
                   </TableView>
-                  {/* <Text>{JSON.stringify(myRequests)}</Text> */}
-               
-              </ScrollView>
-          </SafeAreaView>
-          </View>
+                  
+          
+                  </ScrollView>
+              </SafeAreaView>
+           </View>
           )
         }
       }
     }
   }
-
+  // Cusotm header showing the toggle Switch
   const CustomSectionHeader = (props) => {
     const boolCompleted = props.boolCompleted
     const toggleSwitch = props.toggleSwitch
 
     return (
       <View style={{height :40}}>
-        
-        
         <View style={{position:'absolute', right: 10, flexDirection : 'row'}}>
           <Text style={{marginRight: 10, marginTop: 6}}>{getTranslatedMessage('completed_requests', props.appInfoStore)}</Text>
-        <Switch
-        
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={boolCompleted ? "#f5dd4b" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleSwitch}
-        value={boolCompleted}
-    />
-          
-          </View>
+            <Switch
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={boolCompleted ? "#f5dd4b" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={boolCompleted}
+            />
+        </View>
       </View>    
     )
   }
-
-  const RequestCustomCell = (props) => {
   
+  // Custom table cell
+  const RequestCustomCell = (props) => {
     return (
         <Cell key={props.iterator}
           {...props}
@@ -357,32 +322,24 @@ const AssignedRequestTabComponent = (props) => {
           backgroundColor= {props.iterator % 2 == 0 ? "#ffff" : "#f4f3f4"}
           cellContentView = {
             <View style={{width: "95%", height: 100} }>
-
               <View style={customCellStyles.titleBubble}>
                 <Text>{props.requester}</Text>
               </View>
-
               <View style={customCellStyles.timeBubble}>
-                 <Text>{formatDateTimeNicely(props.appInfoStore, props.submittedDateTime)}</Text>
+                <Text>{formatDateTimeNicely(props.appInfoStore, props.submittedDateTime)}</Text>
               </View>
-              
-              
-              
               <View style={customCellStyles.urgencyBubble}>
                 <Text>{props.urgency}</Text>
               </View>
-              
               <View style={customCellStyles.buildingBubble}>
                 <Text>{props.building}</Text>
               </View>
-              
             </View>
           }
           />
-        
     ) 
   }
-
+  // helper function to show a nice date and time and not a SQL formatted date and time!
   const formatDateTimeNicely = (appInfoStore, thisDate) => {
     var active_lang = getCurrentActiveLanguage(appInfoStore)
     const thisDateAsDate = new Date(thisDate)
@@ -398,11 +355,12 @@ const AssignedRequestTabComponent = (props) => {
     
   }
 
+  // helper padding function
   function str_pad(theNumber) {
     return ('0' + theNumber).slice(-2)
   }
   
-
+  //styles
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -427,7 +385,6 @@ const AssignedRequestTabComponent = (props) => {
       width: windowWidth - 40,
       height : 200,
       marginBottom : 20
-  
   },
   modalView: {
     margin: 20,
@@ -519,6 +476,7 @@ const AssignedRequestTabComponent = (props) => {
       fontWeight : 'bold'
     }
   });
+
   const customCellStyles = StyleSheet.create({
     generalView : {
       paddingTop: 10, 
@@ -589,9 +547,6 @@ const AssignedRequestTabComponent = (props) => {
 
     
 });
-
-
-
 
 // export the custom tab for later use
 export {AssignedRequestTabComponent}

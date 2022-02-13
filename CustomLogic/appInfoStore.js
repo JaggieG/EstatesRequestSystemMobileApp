@@ -1,17 +1,12 @@
-// import th required funcitons from redux to create a store
-import {
-  createStore
-} from 'redux'
+// import the required funcitons from redux to create a store
+import { createStore } from 'redux'
 
 // import the updateApp Info and defualt app info from the settings and storage classes
-import {
-  updateAppInfo
-} from './storage'
-import {
-  defaultAppInfo
-} from './globalSettings'
+import { updateAppInfo } from './storage'
+import { defaultAppInfo } from './globalSettings'
 
-// base reducer that updated the root appInfo that is used everywhere in the application (Auth info etc.)
+// reducer that updated the root appInfo that is used everywhere in the application (Auth info etc.)
+
 function appInfo(state = defaultAppInfo, action) {
   switch (action.type) {
       case "LOGIN":

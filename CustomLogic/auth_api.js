@@ -1,14 +1,10 @@
 import { Platform } from 'react-native';
+import {Linking,  Alert} from 'react-native';
 
-import { 
-  Linking,
-  Alert
-} from 'react-native';
-
-
-
+// go and get the translation API
 import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
+// this module relies heavily on globla settings!
 import {
   forceDevCreditionals, 
   forced_dev_emailAdddress,
@@ -18,11 +14,11 @@ import {
   force_settings_reload_at_restart,
 } from './globalSettings.js'
 
+
+// other custom logic
 import appInfoStore from './appInfoStore.js';
 import { getAppInfo, clearStorage } from './storage';
-
 import { defaultAppInfo } from './globalSettings';
-
 
 export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
   // Go off an do Google oAuth
@@ -31,13 +27,14 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
     var platform = Platform.OS
 
     const authURL = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.authentication_endpoint
+    
+    // this whole section will never be touched in prod
     if (forceDevCreditionals) {
     
       Alert.alert(getTranslatedMessage('forced_dev', appInfoStore))
-        
+ 
       const api_details = defaultAppInfo.api_details
-        
-        appInfoStore.dispatch({
+      appInfoStore.dispatch({
         type: "LOGIN",
         payload: { 
           email_address: forced_dev_emailAdddress, 
@@ -47,16 +44,20 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
           int_SystemRole: force_dev_intSystemRole,
         }
       });
-      
       // as we have some fake login data
       refreshMe()
     } else {
+        // we need to parse it for real
       if (initialUrl.indexOf("?")>-1){
         initialUrl = initialUrl.substring(0,initialUrl.indexOf("?"));
-        }
+      }
 
       if (platform == 'web') {
         // We need to make an http call rather than a deep link
+
+        /*
+          NOTE TO MARKER, HAVE STUGGLED WITH CORS HERE, SHO DOESN'T WORK AS EXPECTED
+        */
         const completeURL = authURL + '?returnURL=' + encodeURI(initialUrl)
         //Linking.openURL(completeURL)
 
@@ -75,25 +76,22 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
         refreshMe()
       } else {
         const completeURL = authURL + '?returnURL=' + encodeURI(initialUrl)
-        console.log(completeURL)
         if(initialUrl) {
-        
           Linking.openURL(completeURL)
         } else {
           Alert.alert(getTranslatedMessage('url_failure', appInfoStore))
         }
-        
       } 
     }
-      
   });  
 }
 
+// When the return value comes back from the server then we will run this...
 export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
   const url = url_.url
   if (url) {
     if (url.indexOf("?retrieval_token") !== -1) {
-        // now we have a  retreiva token we have 1 minute to use to to get our JWT token. We post it to the endpoint for security
+        // now we have a retreival token we have 1 minute to use to to get our JWT token. We post it to the endpoint for security
         var regex = /[?&]([^=#]+)=([^&#]*)/g,
         params = {},
         match;
@@ -103,7 +101,6 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
 
         const appInfo = appStoreInfo.getState()
         const retrieval_url = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.retrieval_endpoint
-          console.log(url)
         fetch(retrieval_url, {
           method: 'POST',
           headers: {
@@ -131,10 +128,8 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
                   int_SystemRole: the_record.int_SystemRole,
                 }
               });
-              
-              
             }
-            refreshMe()
+            refreshMe() // we have updated the appInfo, we should refresh
           })
           .catch((error) => {
             console.error(error);
@@ -144,6 +139,7 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
       }
 }
 
+// at startup we need to go and get the data from the secure store....
 export async function processAuthAtStartUp(appInfoStore, callback) {
  
   var appInfoFromStorage = await getAppInfo()
@@ -192,22 +188,21 @@ export async function processAuthAtStartUp(appInfoStore, callback) {
       // console.log('=')
       // console.log(default_api_details)
       // console.log('LANG: ' + local_app_language + ' = ' + default_app_language) 
-      // console.log('ROLE: ' + local_intSystemRole + ' = ' + default_intSystemRole) 
-      
+      // console.log('ROLE: ' + local_intSystemRole + ' = ' + default_intSystemRole)   
     }
     
   } else {
-        if (appInfoFromStorage) {
-            appInfoStore.dispatch({
-              type: "STARTUP",
-              payload: appInfoFromStorage
-            });
-          } else {
-            appInfoStore.dispatch({
-              type: "STARTUP",
-              payload: defaultAppInfo
-            });
-          }
-          callback(true)
+    if (appInfoFromStorage) {
+        appInfoStore.dispatch({
+          type: "STARTUP",
+          payload: appInfoFromStorage
+        });
+      } else {
+        appInfoStore.dispatch({
+          type: "STARTUP",
+          payload: defaultAppInfo
+        });
+      }
+    callback(true)
     }
 }

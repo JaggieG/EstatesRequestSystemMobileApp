@@ -3,12 +3,12 @@
 /*
   Note to Marker
 
-  The forceDevCreditionals variable will toggle wether the application uses the oAuth or a forced developement
+  The forceDevCreditionals variable will toggle whether the application uses the oAuth or a forced developement
   version for testing. This should be activated, althoug, I have provided a username that you can test the oAuth
   with in the documentation
 
 */
-export const forceDevCreditionals = false
+export const forceDevCreditionals = true
 export const force_settings_reload_at_restart = false
 export const forced_dev_emailAdddress = 'jag@aiglon.ch'
 export const forced_dev_displayName = 'John Gerhardt'

@@ -13,134 +13,118 @@ import {
     ScrollView
   } from 'react-native';
 
+// import custom logic
+import {authenticateMe} from '../CustomLogic/auth_api'
 
-  import {authenticateMe} from '../CustomLogic/auth_api'
-// Global device setupss
-
+  // Global device setupss
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-  // get global funciton for translation
-  import { getTranslatedMessage } from '../CustomLogic/messages.js'
- import { forced_dev_JWTToken } from '../CustomLogic/globalSettings'
+// get global funciton for translation
+import { getTranslatedMessage } from '../CustomLogic/messages'
+import { forced_dev_JWTToken } from '../CustomLogic/globalSettings'
 
 // the connection tab
 const SettingsTabComponent = (props) => {
-    const appInfo = props.appInfoStore.getState()    
-            var JWT_exists = ''
-        if (appInfo.JWT_Token != null) {
-            if (appInfo.JWT_Token == forced_dev_JWTToken) {
-                JWT_exists = "valid - DEV mode"
-            } else {
-                JWT_exists = "valid"
-            }
-            
-
+const appInfo = props.appInfoStore.getState()    
+        var JWT_exists = ''
+    if (appInfo.JWT_Token != null) {
+        if (appInfo.JWT_Token == forced_dev_JWTToken) {
+            JWT_exists = "valid - DEV mode"
         } else {
-            JWT_exists = "invalid"
+            JWT_exists = "valid"
         }
-            // we have auth info      
-            return (
-                <View style={connectionStyles.baseView}>
-                <StatusBar style = "dark"  />
-                <SafeAreaView>
-                <ScrollView>
-                     <Image source={require('../assets/aiglon_logo.png')} style={connectionStyles.aiglonLogo}/>       
-                   
-                        <Text style={connectionStyles.welcomeText}> 
-                             {getTranslatedMessage('logged_in', props.appInfoStore)}
-                        </Text>
-
-                        <View style={connectionStyles.connectionDetails}>
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>Email Address:</Text>
-                                <Text> {appInfo.email_address}</Text>
-                            </View>
-
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>Display Name:</Text>
-                                <Text> {appInfo.display_name}</Text>
-                            </View>
-
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>JWT Token:</Text>
-                                <Text> {JWT_exists}</Text>
-                            </View>
-
-                             
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>Lang:</Text>
-                                <Text> {appInfo.app_language}</Text>
-                            </View>
-
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>System Role:</Text>
-                                <Text> {appInfo.int_SystemRole}</Text>
-                            </View>
-
-                    
-
-                            
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>api_server_url:</Text>
-                                <Text> {appInfo.api_details.api_server_url}</Text>
-                            </View>
-
-                            
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>authentication_endpoint</Text>
-                                <Text> {appInfo.api_details.authentication_endpoint}</Text>
-                            </View>
-
-                            
-                            <View style={{flexDirection: 'row' }}>
-                                <Text style={{fontWeight : "bold"}}>api_path</Text>
-                                <Text> {appInfo.api_details.api_path}</Text>
-                            </View>
-                        </View>
-
-                        <Text style={connectionStyles.welcomeText}> 
-                             {getTranslatedMessage('log_in_again', props.appInfoStore)}
-                        </Text>
-                    
-                        <TouchableOpacity activeOpacity = { .5 } 
-                            onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}
-                        > 
-                            <Image source={require('../assets/google-signin-button.png')} style={connectionStyles.signInButton}/>          
-                        </TouchableOpacity>
-                
-                <Text style={connectionStyles.languageChooser}>
-                 {getTranslatedMessage('choose_language',props.appInfoStore)}
-                </Text>
-            <View style={connectionStyles.flagContainer}> 
-           
-            <TouchableOpacity activeOpacity = { .5 } onPress={() => swapLanguageTo(props.appInfoStore, props.refreshMe, 'en')}>   
-                <Image source={require('../assets/GB.png')} style={connectionStyles.gbFlag}/> 
-            </TouchableOpacity>    
-            <TouchableOpacity activeOpacity = { .5 } onPress={() => swapLanguageTo(props.appInfoStore, props.refreshMe, 'fr')}>     
-                <Image source={require('../assets/CH.png')} style={connectionStyles.swissFlag}/>       
-                </TouchableOpacity>    
-            </View>
-                
-                
-            </ScrollView>
-                </SafeAreaView>
-            </View>
         
-                );
-     
-  }
 
-  const swapLanguageTo = (appInfoStore, refreshMe,langCode) => {
-      appInfoStore.dispatch({
-        type: "LANG_UPDATE",
-        payload: { 
-            app_language : langCode,
-        }
-      });  
-      refreshMe()
-  }
+    } else {
+        JWT_exists = "invalid"
+    }
+        // we have auth info      
+        return (
+            <View style={connectionStyles.baseView}>
+                <StatusBar style = "dark"  />
+                    <SafeAreaView>
+                         <ScrollView>
+                            <Image source={require('../assets/aiglon_logo.png')} style={connectionStyles.aiglonLogo}/>       
+                            <Text style={connectionStyles.welcomeText}> 
+                                    {getTranslatedMessage('logged_in', props.appInfoStore)}
+                            </Text>
+                            <View style={connectionStyles.connectionDetails}>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>Email Address:</Text>
+                                    <Text> {appInfo.email_address}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>Display Name:</Text>
+                                    <Text> {appInfo.display_name}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>JWT Token:</Text>
+                                    <Text> {JWT_exists}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>Lang:</Text>
+                                    <Text> {appInfo.app_language}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>System Role:</Text>
+                                    <Text> {appInfo.int_SystemRole}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>api_server_url:</Text>
+                                    <Text> {appInfo.api_details.api_server_url}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>authentication_endpoint</Text>
+                                    <Text> {appInfo.api_details.authentication_endpoint}</Text>
+                                </View>
+                                <View style={{flexDirection: 'row' }}>
+                                    <Text style={{fontWeight : "bold"}}>api_path</Text>
+                                    <Text> {appInfo.api_details.api_path}</Text>
+                                </View>
+                             </View>
 
+                            <Text style={connectionStyles.welcomeText}> 
+                                    {getTranslatedMessage('log_in_again', props.appInfoStore)}
+                            </Text>
+                
+                            <TouchableOpacity activeOpacity = { .5 } 
+                                onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}
+                            > 
+                                <Image source={require('../assets/google-signin-button.png')} style={connectionStyles.signInButton}/>          
+                            </TouchableOpacity>
+            
+                            <Text style={connectionStyles.languageChooser}>
+                                {getTranslatedMessage('choose_language',props.appInfoStore)}
+                            </Text>
+
+                            <View style={connectionStyles.flagContainer}> 
+                                <TouchableOpacity activeOpacity = { .5 } onPress={() => swapLanguageTo(props.appInfoStore, props.refreshMe, 'en')}>   
+                                    <Image source={require('../assets/GB.png')} style={connectionStyles.gbFlag}/> 
+                                </TouchableOpacity>    
+                                <TouchableOpacity activeOpacity = { .5 } onPress={() => swapLanguageTo(props.appInfoStore, props.refreshMe, 'fr')}>     
+                                    <Image source={require('../assets/CH.png')} style={connectionStyles.swissFlag}/>       
+                                </TouchableOpacity>    
+                            </View>  
+                    </ScrollView>
+            </SafeAreaView>
+        </View>
+    );
+    
+}
+
+// helper function to swap the langauge
+const swapLanguageTo = (appInfoStore, refreshMe,langCode) => {
+    appInfoStore.dispatch({
+    type: "LANG_UPDATE",
+    payload: { 
+        app_language : langCode,
+    }
+    });  
+    refreshMe() // once we have changed langaige we should refresh the wole app
+}
+
+// Styles
 const connectionStyles = StyleSheet.create({
     baseView : {
         flex: 1, 

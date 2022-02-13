@@ -1,3 +1,8 @@
+/*
+The data api is used throughout the application and is repsonsible for getting the data from the API
+*/
+
+
 export const getAllMyRequests = async (appInfo, boolCompleted, callback) => {
     const baseURL = getBaseURL(appInfo)
     var myRequestEndpoint = 'getMyRequests'
@@ -130,8 +135,6 @@ export const getRequestRecordCounts = async (appInfo, boolCompleted, callback) =
     }
 }
 
-
-
 export const createANewRequst = async (appInfo, 
                                         building,
                                         building_id,
@@ -146,7 +149,6 @@ export const createANewRequst = async (appInfo,
     var email_address = getEmailAddress(appInfo)
     var JWT_Token = getJWTToken(appInfo)
 
-    
     try {
         let response = await fetch(completeURL, {
             method: 'POST',
@@ -158,7 +160,8 @@ export const createANewRequst = async (appInfo,
 
             body: JSON.stringify({
                 authObject : {
-                    email_address: email_address
+                    email_address: email_address,
+                    userDisplayName : appInfo.display_name
                 },
                 payload : {
                     building: building,

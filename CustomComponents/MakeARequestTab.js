@@ -4,7 +4,6 @@ import React, {useState, useEffect } from 'react';
 import SelectDropdown from 'react-native-select-dropdown'
 import { useNavigation } from '@react-navigation/native';
 
-
 //standard react ocmponents
 import { 
     TextInput, 
@@ -32,7 +31,7 @@ const windowHeight = Dimensions.get('window').height;
   import { getTranslatedMessage } from '../CustomLogic/messages.js'
 
 
-  // custom Logic
+// custom Logic
 import {
   createANewRequst,
   getItemList,
@@ -42,10 +41,16 @@ import {
   
 // the connection tab
 const MakeARequestTabComponent = (props) => {
+  //globla variables
   var appInfoStore = props.appInfoStore
+  const updateBadges = props.updateBadges
   const appInfo = appInfoStore.getState()
   const navigation = useNavigation()
 
+  const [pageDataLoaded, setPageDataLoaded] = useState(false)
+
+
+  // form input varibales
   const [descriptionText, onChangeDescriptionText] = useState("");
   const [titleText, onChangeTitleText] = useState("");
   
@@ -55,20 +60,19 @@ const MakeARequestTabComponent = (props) => {
   const [urgencyText, onChangeUrgencyText] = useState("");
   const [urgencyId, onChangeUrgencyId] = useState("");
 
-  const [pageDataLoaded, setPageDataLoaded] = useState(false)
+  const [buildingArray, setBuildingArray] = useState([])
+  const [buildingInfo, setBuildingInfo] = useState([])
 
-   const [buildingArray, setBuildingArray] = useState([])
-   const [buildingInfo, setBuildingInfo] = useState([])
+  const [urgencyArray, setUrgencyArray] = useState([])
 
-   const [urgencyArray, setUrgencyArray] = useState([])
+  const [errorDetected, setErrorDetected] = useState(false)
+  const [errorDetails, setErrorDetails] = useState('')
+  const [refreshing, setRefreshing] = useState(false);
 
-   const [errorDetected, setErrorDetected] = useState(false)
-   const [errorDetails, setErrorDetails] = useState('')
-   const [refreshing, setRefreshing] = useState(false);
-
-   const onRefresh = React.useCallback(() => {
+    // helper callback to run when there is a page refresh
+  const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-  
+
     var appInfo = appInfoStore.getState()
     getUrgencyList(appInfo, function(err, urgencyReturnData) {
           if(err) {
@@ -99,47 +103,44 @@ const MakeARequestTabComponent = (props) => {
             })
         }
     })
+}, []);
+
+  // user Effect run and componenet mount or change
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      var appInfo = appInfoStore.getState()
+      getUrgencyList(appInfo, function(err, urgencyReturnData) {
+            if(err) {
+              setErrorDetected(true)
+              setErrorDetails(err.toString())
+            } else {
+              var urgencyArray = urgencyReturnData.message
+              setUrgencyArray(urgencyArray)
+
+              getItemList(appInfo, function(err, buildingReturnData) {
+                if(err) {
+                  setErrorDetails(err.toString())
+                  setErrorDetected(true)
+                } else {
+                  var buildingDetails = buildingReturnData.message
+                  var buidlingInfo = {}
+                  var buildingArray = []
+                  for (var i = 0; i < buildingDetails.data.length ; i++) {
+                    buildingArray.push(buildingDetails.data[i].text_name)
+                    buidlingInfo[buildingDetails.data[i].text_name] = buildingDetails.data[i].id
+                  }
+                  setBuildingInfo(buidlingInfo)
+                  setBuildingArray(buildingArray)    
+                  setPageDataLoaded(true)   
+                }
+              })
+          }
+      })
+    });
+    return unsubscribe;
   }, []);
 
-  
-    useEffect(() => {
-      const unsubscribe = navigation.addListener('focus', () => {
-        // The screen is focused
-        // Call any action
-        var appInfo = appInfoStore.getState()
-        getUrgencyList(appInfo, function(err, urgencyReturnData) {
-              if(err) {
-                setErrorDetected(true)
-                setErrorDetails(err.toString())
-              } else {
-                var urgencyArray = urgencyReturnData.message
-                setUrgencyArray(urgencyArray)
-
-                getItemList(appInfo, function(err, buildingReturnData) {
-                  if(err) {
-                    setErrorDetails(err.toString())
-                    setErrorDetected(true)
-                  } else {
-                    var buildingDetails = buildingReturnData.message
-                    var buidlingInfo = {}
-                    var buildingArray = []
-                    for (var i = 0; i < buildingDetails.data.length ; i++) {
-                      buildingArray.push(buildingDetails.data[i].text_name)
-                      buidlingInfo[buildingDetails.data[i].text_name] = buildingDetails.data[i].id
-                    }
-                    setBuildingInfo(buidlingInfo)
-                    setBuildingArray(buildingArray)    
-                    setPageDataLoaded(true)   
-                  }
-                })
-            }
-        })
-      });
-  
-      // Return the function to unsubscribe from the event so it gets removed on unmount
-      return unsubscribe;
-    }, []);
-
+    //helper function that is run when the form is submitted
     const submitForm = (navigation, appInfoStore) => {
       var okToSubmit = true
       if (okToSubmit) {
@@ -167,7 +168,7 @@ const MakeARequestTabComponent = (props) => {
           okToSubmit = false
         }
       }
-
+      // we are ready to submit
       if (okToSubmit) {
         setPageDataLoaded(false)
         var buildingId = buildingInfo[buildingText]
@@ -195,165 +196,132 @@ const MakeARequestTabComponent = (props) => {
             onChangeDescriptionText("")
             onChangeTitleText("")
             
+            updateBadges() // so that the badges on the tabs reflect the new changes
             navigation.navigate(getTranslatedMessage('my_requests_tab',appInfoStore))
           
           }
       })
-       
       }
-
     }
-
-
-      if (pageDataLoaded) {
+    // we have data! 
+    if (pageDataLoaded) {
         return (
           <View style={styles.container}>
-          <StatusBar style = "dark"  />
-          <SafeAreaView style={{ backgroundColor: "#FFF"}}>
-          <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
-                    refreshControl={
-                      <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                      />
-                    }>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-              <View style={styles.mainView}>
+            <StatusBar style = "dark"  />
+            <SafeAreaView style={{ backgroundColor: "#FFF"}}> 
+              <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
+                  refreshControl={<RefreshControl  refreshing={refreshing} onRefresh={onRefresh} />}>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={styles.mainView}>
+                  <Image source={require('../assets/addBuilding.png')}  style={[styles.headerImage]}/> 
+                  <View style={{ backgroundColor: "#FFF"}}>
+                    <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_building', props.appInfoStore)}</Text>
+                    <SelectDropdown
+                      data={buildingArray}
+                      defaultButtonText = {getTranslatedMessage('please_choose', props.appInfoStore)}
+                      buttonStyle={formStyles.dropdownBtnStyle}
+                      buttonTextStyle={formStyles.dropdownBtnTxtStyle}
+                      onSelect={(selectedItem, index) => {
+                        onChangeBuildingText(selectedItem)
+                        onChangeBuildingIndex(index)
+                      }}
+                      buttonTextAfterSelection={(selectedItem, index) => {
+                        return selectedItem
+                      }}
+                      rowTextForSelection={(item, index) => {
+                        return item
+                      }}
+                     />
+                  </View>
 
-              <Image source={require('../assets/addBuilding.png')}  style={[styles.headerImage]}/> 
+                  <View>
+                    <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_urgency', props.appInfoStore)}</Text>
+                    <SelectDropdown
+                        data={urgencyArray}
+                        defaultButtonText = {getTranslatedMessage('please_choose', props.appInfoStore)}
+                        buttonStyle={formStyles.dropdownBtnStyle}
+                        buttonTextStyle={formStyles.dropdownBtnTxtStyle}
+                        onSelect={(selectedItem, index) => {
       
-              <View style={{ backgroundColor: "#FFF"}}>
-              <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_building', props.appInfoStore)}</Text>
-                <SelectDropdown
-                    data={buildingArray}
-                    defaultButtonText = {getTranslatedMessage('please_choose', props.appInfoStore)}
-                    buttonStyle={formStyles.dropdownBtnStyle}
-                    buttonTextStyle={formStyles.dropdownBtnTxtStyle}
-                    onSelect={(selectedItem, index) => {
-                      onChangeBuildingText(selectedItem)
-                      onChangeBuildingIndex(index)
-                    }}
-                    buttonTextAfterSelection={(selectedItem, index) => {
-                      // text represented after item is selected
-                      // if data array is an array of objects then return selectedItem.property to render after item is selected
-                      return selectedItem
-                    }}
-                    rowTextForSelection={(item, index) => {
-                      // text represented for each item in dropdown
-                      // if data array is an array of objects then return item.property to represent item in dropdown
-                      return item
-                    }}
-                />
-              </View>
-
-              <View>
-                <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_urgency', props.appInfoStore)}</Text>
-                <SelectDropdown
-                    data={urgencyArray}
-                    defaultButtonText = {getTranslatedMessage('please_choose', props.appInfoStore)}
-                    buttonStyle={formStyles.dropdownBtnStyle}
-                    buttonTextStyle={formStyles.dropdownBtnTxtStyle}
-                    onSelect={(selectedItem, index) => {
-  
-                      onChangeUrgencyText(selectedItem)
-                      onChangeUrgencyId(index)
-                    }}
-                    buttonTextAfterSelection={(selectedItem, index) => {
-                      // text represented after item is selected
-                      // if data array is an array of objects then return selectedItem.property to render after item is selected
-                      return selectedItem
-                    }}
-                    rowTextForSelection={(item, index) => {
-                      // text represented for each item in dropdown
-                      // if data array is an array of objects then return item.property to represent item in dropdown
-                      return item
-                    }}
-                />
-              </View>
+                          onChangeUrgencyText(selectedItem)
+                          onChangeUrgencyId(index)
+                        }}
+                        buttonTextAfterSelection={(selectedItem, index) => {
+                          return selectedItem
+                        }}
+                        rowTextForSelection={(item, index) => {
+                          return item
+                        }}
+                     />
+                  </View>
               
-              <View>
-              <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_title', props.appInfoStore)}</Text>
-                <TextInput
-                
-                  style={formStyles.titleField}
-                  placeholder={getTranslatedMessage('make_request_title', props.appInfoStore)}
-                  onChangeText= {onChangeTitleText}
-                  value= {titleText}
-                />
-              </View>
+                  <View>
+                    <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_title', props.appInfoStore)}</Text>
+                    <TextInput
+                      style={formStyles.titleField}
+                      placeholder={getTranslatedMessage('make_request_title', props.appInfoStore)}
+                      onChangeText= {onChangeTitleText}
+                      value= {titleText}
+                    />
+                  </View>
 
-              <View>
-              <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_description', props.appInfoStore)}</Text>
-                <TextInput
-                  multiline={true}
-                  numberOfLines = {10}
-                  style={formStyles.descriptionField}
-                  placeholder={getTranslatedMessage('make_request_description', props.appInfoStore)}
-                  onChangeText= {onChangeDescriptionText}
-                  value= {descriptionText}
-                />
-              </View>
+                  <View>
+                    <Text style={formStyles.fieldTitle}>{getTranslatedMessage('make_request_description', props.appInfoStore)}</Text>
+                    <TextInput
+                      multiline={true}
+                      numberOfLines = {10}
+                      style={formStyles.descriptionField}
+                      placeholder={getTranslatedMessage('make_request_description', props.appInfoStore)}
+                      onChangeText= {onChangeDescriptionText}
+                      value= {descriptionText}
+                    />
+                  </View>
               
-              <Pressable style={styles.button}  onPress={() => submitForm(navigation, appInfoStore)}>
-                <Text style={styles.text}>{getTranslatedMessage('submit', appInfoStore)}</Text>
-              </Pressable>
-
+                  <Pressable style={styles.button}  onPress={() => submitForm(navigation, appInfoStore)}>
+                    <Text style={styles.text}>{getTranslatedMessage('submit', appInfoStore)}</Text>
+                  </Pressable>
               </View>
-
-          
-              
-              </TouchableWithoutFeedback>
-            </ScrollView>
-          </SafeAreaView>
-        </View>
-        );
+            </TouchableWithoutFeedback>
+          </ScrollView>
+        </SafeAreaView>
+       </View>
+    );
       } else {
 
         if (errorDetected) {
           return (
             <View style={styles.container}>
-            <StatusBar style = "dark"  />
-            <SafeAreaView>
-            <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
-                    refreshControl={
-                      <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                      />
-                    }>
-              <View style={styles.mainView}>
-              <Image source={require('../assets/error.jpg')}  style={[styles.errorImage]}/> 
-              
-              
-                <Text>{getTranslatedMessage('generic_error', props.appInfoStore)}</Text>
-                <Text>{errorDetails}</Text>
-                </View> 
-
-                
-              </ScrollView>
-            </SafeAreaView>
+              <StatusBar style = "dark"  />
+              <SafeAreaView>
+                <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
+                        refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                  <View style={styles.mainView}>
+                    <Image source={require('../assets/error.jpg')}  style={[styles.errorImage]}/> 
+                    <Text>{getTranslatedMessage('generic_error', props.appInfoStore)}</Text>
+                    <Text>{errorDetails}</Text>
+                  </View>   
+                </ScrollView>
+              </SafeAreaView>
           </View>
           )
         } else {
           return (
             <View style={styles.container}>
-            <StatusBar style = "dark"  />
-            <SafeAreaView style={styles.mainView}>
-              <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
-                <View style={[activityIndicatorStyles.container]}>
-                  <ActivityIndicator size="large" color="#0000ff"  />
-                </View> 
-              </ScrollView>
-            </SafeAreaView>
-          </View>
+              <StatusBar style = "dark"  />
+              <SafeAreaView style={styles.mainView}>
+                <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}>
+                  <View style={[activityIndicatorStyles.container]}>
+                    <ActivityIndicator size="large" color="#0000ff"  />
+                  </View> 
+                </ScrollView>
+              </SafeAreaView>
+           </View>
           )
         }
-       
       }
-
     } 
 
-  
+ //Styles
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -366,6 +334,7 @@ const MakeARequestTabComponent = (props) => {
       marginTop: 20,
       paddingLeft: 10,
       paddingRight: 10,
+      paddingBottom: 200 // for the Keybaord
     },
     tableCell : {
       backgroundColor: '#FFF',

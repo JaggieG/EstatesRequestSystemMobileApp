@@ -1,8 +1,8 @@
 // react status bar
 import { StatusBar } from 'expo-status-bar';
-import React, {useContext,useState } from 'react';
+import React, {useState } from 'react';
 
-//standard react ocmponents
+//standard react components
 import { 
     Text, 
     View, 
@@ -13,26 +13,25 @@ import {
     Dimensions
   } from 'react-native';
 
-  import {authenticateMe} from '../CustomLogic/auth_api'
+// go and get the authenticate functions form the auth_api
+import {authenticateMe} from '../CustomLogic/auth_api'
 
-
-  
 // Global device setupss
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-  // get global funciton for translation
-import { getTranslatedMessage } from '../CustomLogic/messages.js'
+  
+// get global function for translation
+import { getTranslatedMessage } from '../CustomLogic/messages'
 
 // the connection tab
 const ConnectionTabComponent = (props) => {
     //const appInfo = props.appInfoStore.getState()  
     const [appInfo, setAppInfo] = useState(props.appInfoStore.getState()  )//
-  
         if (appInfo.email_address != null) {
             // we have auth info      
             return (
-                // This shouln't be seen as the conneciton tab is only shown when we have no email address but..
+                // This shouln't be seen as the connection tab is only shown when we have no email address but..
                 <View style={connectionStyles.baseView}>
                     <StatusBar style = "dark"  />
                     <SafeAreaView>
@@ -52,27 +51,25 @@ const ConnectionTabComponent = (props) => {
                 );
         } else {
             return (
-            <View style={connectionStyles.baseView}>
-                <StatusBar style = "dark"  />
-                <SafeAreaView>
-                    <Image source={require('../assets/aiglon_logo.png')} style={connectionStyles.aiglonLogo}/>      
-                        <Text style={connectionStyles.welcomeText}> 
-                        {getTranslatedMessage('not_logged_in', props.appInfoStore)}
-                        </Text>
-                        <Text style={connectionStyles.welcomeText}> Auth via: {"\r\n"}{appInfo.api_details.api_server_url}</Text>
-                        <TouchableOpacity activeOpacity = { .5 } 
-                            onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}
-                        > 
-                            <Image source={require('../assets/google-signin-button.png')} style={connectionStyles.signInButton}/>          
-                            
-                        </TouchableOpacity>
-                    
-                </SafeAreaView>
-            </View>
+                <View style={connectionStyles.baseView}>
+                    <StatusBar style = "dark"  />
+                    <SafeAreaView>
+                        <Image source={require('../assets/aiglon_logo.png')} style={connectionStyles.aiglonLogo}/>      
+                            <Text style={connectionStyles.welcomeText}> 
+                            {getTranslatedMessage('not_logged_in', props.appInfoStore)}
+                            </Text>
+                            <Text style={connectionStyles.welcomeText}> Auth via: {"\r\n"}{appInfo.api_details.api_server_url}</Text>
+                            <TouchableOpacity activeOpacity = { .5 } 
+                                onPress={() => authenticateMe(appInfo, props.appInfoStore, props.refreshMe)}> 
+                                <Image source={require('../assets/google-signin-button.png')} style={connectionStyles.signInButton}/>          
+                            </TouchableOpacity>
+                    </SafeAreaView>
+                </View>
             );
         }
   }
 
+// Styles
 const connectionStyles = StyleSheet.create({
     baseView : {
         flex: 1, 

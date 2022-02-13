@@ -21,8 +21,7 @@ async function save(key, value) {
   }
 
   export async function getAppInfo() {
-    //await updateAppInfo(JSON.stringify(defaultState)) // to force a state back in
-      // if there is no value in the store then we should add one as we need it
+    // if there is no value in the store then we should add one as we need it
     var result =  await getValueFor(store_key)
 
     if (result == null) {
