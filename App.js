@@ -21,6 +21,7 @@ import { CustomTabNavigatorComponent } from './CustomComponents/TabNavigator'
 //import {ErrorView} from './CustomComponents/ErrorView'
 
 //custom logic
+
 import appInfoStore from './CustomLogic/appInfoStore'
 
 import {processAuthReturn, processAuthAtStartUp} from './CustomLogic/auth_api' 

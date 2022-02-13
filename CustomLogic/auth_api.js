@@ -18,7 +18,7 @@ import {
 } from './globalSettings.js'
 
 import appInfoStore from './appInfoStore.js';
-import { getAppInfo } from './storage.js';
+import { getAppInfo } from './storage';
 
 import { defaultAppInfo } from './globalSettings';
 
@@ -150,7 +150,9 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
 }
 
 export async function processAuthAtStartUp(appInfoStore, setReadyToLoad) {
+  
   var appInfoFromStorage = await getAppInfo()
+  
   // If there is nothing in the app Info sotre then this is the first time the app launched - use the default
   if (force_settings_reload) {  
     const local_state = appInfoStore.getState()

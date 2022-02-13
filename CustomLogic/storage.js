@@ -1,30 +1,55 @@
-import * as SecureStore from 'expo-secure-store';
+//Implement async storage when we are on webpack (NOT SECURE ONLY FOR TEST)
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const store_key = 'AiglonEstatesStore'
+const store_key = '@AiglonEstatesStore'
 
-async function save(key, value) {
-    await SecureStore.setItemAsync(key, value);
-  }
+import { defaultAppInfo } from './globalSettings'
 
-  async function getValueFor(key) {
-    let result = await SecureStore.getItemAsync(key);
-    return result
-  }
 
-  export async function updateAppInfo(appInfo) {
-    await save(store_key, appInfo)
+export async function updateAppInfo(appInfo) {
+    await storeData(store_key, JSON.stringify(appInfo))
     return true
-  }
+}
 
-  export async function getAppInfo() {
-    //await updateAppInfo(JSON.stringify(defaultState)) // to force a state back in
-      // if there is no value in the store then we should add one as we need it
-    var result =  await getValueFor(store_key)
+export async function getAppInfo() {
+  //await clearAsyncStorage()//
 
-    if (result == null) {
-        await updateAppInfo(JSON.stringify(defaultState))
-        return await JSON.parse(getValueFor(store_key))
+  var appInfo = await getData(store_key)
+  console.log('appInfo: ' + appInfo)
+    if (appInfo) {
+        return JSON.parse(appInfo)
     } else {
-        return JSON.parse(result)
+        var stored = await updateAppInfo(defaultAppInfo)
+        if (stored) {
+          var appInfo = await getData(store_key)
+          console.log(appInfo)
+          return JSON.parse(appInfo)  
+        }
     }
-  }
+}
+
+const storeData = async (key,value) => {
+    try {
+       const data = await AsyncStorage.setItem(key, value)
+       return  data
+    } catch (e) {
+      // saving error
+      console.log(e)
+      return {}
+    }
+}
+
+const getData = async (key) => {
+    try {
+        const value = await AsyncStorage.getItem(key)
+        return value
+    } catch(e) {
+        // error reading value
+        console.log(e)
+        return null
+    }
+}
+
+const clearAsyncStorage = async() => {
+  AsyncStorage.clear();
+}
