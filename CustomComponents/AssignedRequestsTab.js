@@ -178,7 +178,7 @@ const AssignedRequestTabComponent = (props) => {
                     <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
                         refreshControl={<RefreshControl  refreshing={refreshing} onRefresh={onRefresh} />}>
                       <TableView style={{backgroundColor : "#FFF"}}>
-                        <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
+                        <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader appInfoStore={appInfoStore} boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
                           <View style={customCellStyles.noRecordBubble}>
                             <Text>{getTranslatedMessage('no_records_found', appInfoStore)}</Text>
                           </View>
@@ -262,7 +262,7 @@ const AssignedRequestTabComponent = (props) => {
                   <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
                            refreshControl={<RefreshControl efreshing={refreshing} onRefresh={onRefresh} /> }>
                     <TableView style={{backgroundColor : "#FFF"}}>
-                      <Section  sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch} />}>
+                      <Section  sectionPaddingTop={0} headerComponent={<CustomSectionHeader appInfoStore={appInfoStore} boolCompleted={boolCompleted} toggleSwitch={toggleSwitch} />}>
                           {myRequests.data.map((item, i) => (
                                 <RequestCustomCell 
                                 {...props}
@@ -292,7 +292,7 @@ const AssignedRequestTabComponent = (props) => {
       }
     }
   }
-  // Cusotm header showing the toggle Switch
+  // Custom header showing the toggle Switch
   const CustomSectionHeader = (props) => {
     const boolCompleted = props.boolCompleted
     const toggleSwitch = props.toggleSwitch
