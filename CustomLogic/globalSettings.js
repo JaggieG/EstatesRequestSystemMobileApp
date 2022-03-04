@@ -9,7 +9,7 @@
 
 */
 export const forceDevCreditionals = false
-export const force_settings_reload_at_restart = true//
+export const force_settings_reload_at_restart = true
 export const forced_dev_emailAdddress = 'jag@aiglon.ch'
 export const forced_dev_displayName = 'John Gerhardt'
 export const forced_dev_JWTToken = 'FORCED_DEV'
