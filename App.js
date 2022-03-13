@@ -33,7 +33,7 @@ export default function App() {
   
   const refreshMe = useCallback(() => {
     _setRefreshValue(!refreshValue);
-  }, [])
+  }, [refreshValue])
 
   useEffect(() => {
     // Listening for the return URL when authenticating, we pass the url along with the store and a refreshMe function to refresh the root

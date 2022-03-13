@@ -118,7 +118,7 @@ const AssignedRequestTabComponent = (props) => {
         setRefreshing(false)
       }
   })
-  }, [])
+  }, [boolCompleted, appInfo])
 
   
   // this is called when we refresh the application
