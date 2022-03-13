@@ -1,4 +1,4 @@
-// imprt the required items from React native
+// import the required items from React native
 import { 
   Dimensions, 
   Linking,

@@ -36,7 +36,8 @@ const retrieval_endpoint = "retrieval"
 
 var api_server_url = api_server_url_prod
 if (forceDevCreditionals) {
-    api_server_url = api_server_url_testing_no_auth
+    // This is off when the testing with non local clients
+    //api_server_url = api_server_url_testing_no_auth
 } else {
     api_server_url = api_server_url_prod
 }

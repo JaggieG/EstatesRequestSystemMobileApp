@@ -138,7 +138,7 @@ const MakeARequestTabComponent = (props) => {
       })
     });
     return unsubscribe;
-  }, []);
+  }, [appInfoStore, navigation]);
 
     //helper function that is run when the form is submitted
     const submitForm = (navigation, appInfoStore) => {
@@ -335,10 +335,6 @@ const MakeARequestTabComponent = (props) => {
       paddingLeft: 10,
       paddingRight: 10,
       paddingBottom: 200 // for the Keybaord
-    },
-    tableCell : {
-      backgroundColor: '#FFF',
-      height : "290",
     },
     errorImage : {
       justifyContent: 'center',

@@ -134,7 +134,7 @@ const AssignedRequestTabComponent = (props) => {
       getRequiredData()
     });
     return unsubscribe;
-  }, [boolCompleted]);
+  }, [boolCompleted, getRequiredData, updateBadges]);
   
   // if there is an error detected then we should show the error view!
   if (errorDetected) {
@@ -374,9 +374,6 @@ const AssignedRequestTabComponent = (props) => {
       paddingLeft: 10,
       paddingRight: 10,
     },
-    tableCell : {
-      height : "290",
-    },
     errorImage : {
       justifyContent: 'center',
       alignItems: 'center' ,
@@ -386,22 +383,6 @@ const AssignedRequestTabComponent = (props) => {
       height : 200,
       marginBottom : 20
   },
-  modalView: {
-    margin: 20,
-    marginTop: 50,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
   button: {
     borderRadius: 20,
     padding: 10,
@@ -410,21 +391,6 @@ const AssignedRequestTabComponent = (props) => {
     alignItems: "center",
     justifyContent: "center",
   },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-  }
   });
   
 
@@ -449,20 +415,6 @@ const AssignedRequestTabComponent = (props) => {
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5
-    },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-      marginTop: 20,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    buttonOpen: {
-      backgroundColor: "#F194FF",
-    },
-    buttonClose: {
-      backgroundColor: "#2196F3",
     },
     textStyle: {
       color: "white",

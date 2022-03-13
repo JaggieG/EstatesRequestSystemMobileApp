@@ -94,7 +94,7 @@ const MyRequestsTabComponent = (props) => {
         getRequiredData()
       });
       return unsubscribe;
-    }, [boolCompleted]);
+    }, [boolCompleted, getRequiredData, updateBadges]);
     
     if (errorDetected) {
       return (
@@ -266,10 +266,11 @@ const MyRequestsTabComponent = (props) => {
   
   // the custom cell
   const RequestCustomCell = (props) => {
+    var title = "";
     if (props.title == null) {
-      var title = 'UNKNOWN'
+      title = 'UNKNOWN'
     } else {
-      var title = props.title
+      title = props.title
     }
     return (
         <Cell key={props.iterator}
@@ -329,9 +330,6 @@ const MyRequestsTabComponent = (props) => {
       paddingLeft: 10,
       paddingRight: 10,
     },
-    tableCell : {
-      height : "290",
-    },
     errorImage : {
       justifyContent: 'center',
       alignItems: 'center' ,
@@ -346,11 +344,6 @@ const MyRequestsTabComponent = (props) => {
  
 
   const customCellStyles = StyleSheet.create({
-    generalView : {
-      paddingTop: 10, 
-      paddingBottom: 50, 
-      backgroundColor : "#ccc"
-    },
     urgencyBubble : {
       backgroundColor : "red",
       borderRadius : 75,
@@ -445,9 +438,6 @@ const modalStyles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
   },
   buttonClose: {
     backgroundColor: "#2196F3",

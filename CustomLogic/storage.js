@@ -27,8 +27,8 @@ export async function getAppInfo() {
     } else {
         var stored = await updateAppInfo(defaultAppInfo)
         if (stored) {
-          var appInfo = await getData(store_key)
-          return JSON.parse(appInfo)  
+          var appInfo2 = await getData(store_key)
+          return JSON.parse(appInfo2)  
         }
     }
 }

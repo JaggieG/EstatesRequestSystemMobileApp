@@ -56,7 +56,7 @@ export const authenticateMe = (appInfo, appInfoStore, refreshMe) => {
         // We need to make an http call rather than a deep link
 
         /*
-          NOTE TO MARKER, HAVE STUGGLED WITH CORS HERE, SHO DOESN'T WORK AS EXPECTED
+          NOTE TO MARKER, HAVE STUGGLED WITH CORS HERE, SO DOESN'T WORK AS EXPECTED
         */
         const completeURL = authURL + '?returnURL=' + encodeURI(initialUrl)
         //Linking.openURL(completeURL)
@@ -133,7 +133,6 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
           })
           .catch((error) => {
             console.error(error);
-            refreshMe(!newState)
           });
         }
       }
