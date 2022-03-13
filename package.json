@@ -31,7 +31,7 @@
     "react-hooks-global-state": "^1.0.2",
     "react-native": "0.64.3",
     "react-native-app-auth": "^6.4.1",
-    "react-native-gesture-handler": "^1.10.2",
+    "react-native-gesture-handler": "~1.10.2",
     "react-native-modalbox": "^2.0.2",
     "react-native-safe-area-context": "3.2.0",
     "react-native-safe-area-view": "^1.1.1",
@@ -40,7 +40,8 @@
     "react-native-tableview-simple": "^4.3.1",
     "react-native-testing-library": "^6.0.0",
     "react-native-web": "0.17.1",
-    "tcomb-form-native": "^0.6.20"
+    "tcomb-form-native": "^0.6.20",
+    "react-redux": "~7.2.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
