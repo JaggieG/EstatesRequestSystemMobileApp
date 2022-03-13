@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import { NavigationContainer} from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 // Global device setupss
 

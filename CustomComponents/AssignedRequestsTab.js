@@ -2,7 +2,7 @@
 
 // import react components
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback } from 'react';
 
 // get the nvaigation stack if we have to move from one tab to the next
 import { useNavigation } from '@react-navigation/native';
@@ -103,23 +103,24 @@ const AssignedRequestTabComponent = (props) => {
     );
   }
     
-  // function to go and get the data that we need for the component
-  const getRequiredData = () => {
-      setRefreshing(true); // show the spinner
-      getAllMyAssignedRequests(appInfo, boolCompleted, function(err, api_return) {   
-        if (err) {
-          setErrorDetected(true)
-          setErrorDetails(err.toString())
-          setRefreshing(false);
-        } else {
-          setErrorDetected(false)
-          setErrorDetails('')
-          setMyRequests(api_return)
-          setRefreshing(false)
-        }
-    })
-  }
+// function to go and get the data that we need for the component
+  const getRequiredData = useCallback(() => {
+    setRefreshing(true); // show the spinner
+    getAllMyAssignedRequests(appInfo, boolCompleted, function(err, api_return) {   
+      if (err) {
+        setErrorDetected(true)
+        setErrorDetails(err.toString())
+        setRefreshing(false);
+      } else {
+        setErrorDetected(false)
+        setErrorDetails('')
+        setMyRequests(api_return)
+        setRefreshing(false)
+      }
+  })
+  }, [])
 
+  
   // this is called when we refresh the application
   const onRefresh = React.useCallback(() => {
     updateBadges()
