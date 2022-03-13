@@ -45,7 +45,7 @@ export default function App() {
     Linking.addEventListener('url', function(url) {
       processAuthReturn(url, appInfoStore, refreshMe)
     })   
-  }, []);
+  }, [refreshMe]);
 
   if (readyToLoad) {
     // simple top level application

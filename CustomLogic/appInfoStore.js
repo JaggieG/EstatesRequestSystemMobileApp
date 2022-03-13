@@ -8,10 +8,11 @@ import { defaultAppInfo } from './globalSettings'
 // reducer that updated the root appInfo that is used everywhere in the application (Auth info etc.)
 
 function appInfo(state = defaultAppInfo, action) {
+    var new_state = {};
   switch (action.type) {
       case "LOGIN":
           if (action.payload.api_details) {
-              var new_state = {
+              new_state = {
                   ...state,
                   email_address: action.payload.email_address,
                   display_name: action.payload.display_name,
@@ -21,7 +22,7 @@ function appInfo(state = defaultAppInfo, action) {
                   loginSuccess: true,
               }
           } else {
-              var new_state = {
+              new_state = {
                   ...state,
                   email_address: action.payload.email_address,
                   display_name: action.payload.display_name,
@@ -34,7 +35,7 @@ function appInfo(state = defaultAppInfo, action) {
           updateAppInfo(JSON.stringify(new_state))
           return new_state;
       case "LOGOUT":
-          var new_state = {
+          new_state = {
               ...state,
               email_address: null,
               display_name: null,
@@ -44,11 +45,11 @@ function appInfo(state = defaultAppInfo, action) {
           updateAppInfo(JSON.stringify(new_state))
           return new_state;
       case "STARTUP":
-          var new_state = action.payload
+          new_state = action.payload
           updateAppInfo(JSON.stringify(new_state))
           return new_state;
       case "LANG_UPDATE":
-          var new_state = {
+          new_state = {
               ...state,
               app_language: action.payload.app_language,
           }
