@@ -430,11 +430,6 @@ const AssignedRequestTabComponent = (props) => {
   });
 
   const customCellStyles = StyleSheet.create({
-    generalView : {
-      paddingTop: 10, 
-      paddingBottom: 50, 
-      backgroundColor : "#ccc"
-    },
     urgencyBubble : {
       backgroundColor : "red",
       borderRadius : 75,

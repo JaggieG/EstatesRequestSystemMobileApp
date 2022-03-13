@@ -53,7 +53,7 @@ const CustomTabNavigatorComponent = (props) => {
         updateRecordCounts()
       }, MINUTE_MS);
       return () => clearInterval(interval);
-    }, [updateRecordCounts]);
+    }, []);
 
 
     return (

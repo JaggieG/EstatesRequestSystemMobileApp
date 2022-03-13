@@ -1,6 +1,8 @@
 // react status bar
 import { StatusBar } from 'expo-status-bar';
 
+import React, {useState, useEffect } from 'react';
+
 //standard react ocmponents
 import { 
     Text, 
