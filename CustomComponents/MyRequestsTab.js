@@ -65,9 +65,9 @@ const MyRequestsTabComponent = (props) => {
     setBoolCompleted(!boolCompleted) 
   }
     
-  // go and get the data that we need
-    const getRequiredData = () => {
-       setRefreshing(true);
+ // go and get the data that we need
+  const getRequiredData = React.useCallback(() => {
+    setRefreshing(true);
         getAllMyRequests(appInfo, boolCompleted, function(err, api_return) {   
           if (err) {
           setErrorDetected(true)
@@ -80,7 +80,9 @@ const MyRequestsTabComponent = (props) => {
             setRefreshing(false)
           }
       })
-    }
+  }, [boolCompleted,appInfo]);
+ 
+   
 
     const onRefresh = React.useCallback(() => {
       updateBadges() // needs the badges to update too!

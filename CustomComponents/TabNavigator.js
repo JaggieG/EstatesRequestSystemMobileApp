@@ -28,8 +28,10 @@ const CustomTabNavigatorComponent = (props) => {
     const [myOpenAssignedRequests, setMyOpenAssignedRequests] = useState(0)
 
 
+
     // helper function to update get the record counts from the API and refresh them on the badges
-    const updateRecordCounts = () => {
+    
+    const updateRecordCounts = React.useCallback(() => {
       if (appInfo.email_address != null ) {
         getRequestRecordCounts(appInfo, 0, function(err, api_return) {   
             if (err) {
@@ -40,8 +42,8 @@ const CustomTabNavigatorComponent = (props) => {
             }
           })
        }
+    }, [appInfo]);
     
-    }
     // update the bages every x (60000 = 1min)
     const MINUTE_MS = 60000;
 

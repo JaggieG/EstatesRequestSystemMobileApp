@@ -103,7 +103,7 @@ const MakeARequestTabComponent = (props) => {
             })
         }
     })
-}, []);
+}, [appInfoStore]);
 
   // user Effect run and componenet mount or change
   useEffect(() => {
