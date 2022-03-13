@@ -95,7 +95,7 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
         var regex = /[?&]([^=#]+)=([^&#]*)/g,
         params = {},
         match;
-            while (match = regex.exec(url)) {
+            while (match == regex.exec(url)) {
                 params[match[1]] = match[2];
             }  
 

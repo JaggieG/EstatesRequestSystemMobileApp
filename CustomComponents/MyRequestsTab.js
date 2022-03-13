@@ -85,7 +85,7 @@ const MyRequestsTabComponent = (props) => {
     const onRefresh = React.useCallback(() => {
       updateBadges() // needs the badges to update too!
       getRequiredData()
-    }, []);
+    }, [getRequiredData, updateBadges]);
 
     useEffect(() => {
       getRequiredData()
@@ -94,7 +94,7 @@ const MyRequestsTabComponent = (props) => {
         getRequiredData()
       });
       return unsubscribe;
-    }, [boolCompleted, getRequiredData, updateBadges]);
+    }, [boolCompleted, getRequiredData, updateBadges, navigation]);
     
     if (errorDetected) {
       return (

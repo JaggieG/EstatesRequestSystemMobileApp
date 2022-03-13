@@ -124,7 +124,7 @@ const AssignedRequestTabComponent = (props) => {
   const onRefresh = React.useCallback(() => {
     updateBadges()
     getRequiredData()
-  }, []);
+  }, [updateBadges, getRequiredData ]);
 
   //use Effect run when the component load - relies on the boolComplete
   useEffect(() => {
@@ -134,7 +134,7 @@ const AssignedRequestTabComponent = (props) => {
       getRequiredData()
     });
     return unsubscribe;
-  }, [boolCompleted, getRequiredData, updateBadges]);
+  }, [boolCompleted, getRequiredData, updateBadges, navigation]);
   
   // if there is an error detected then we should show the error view!
   if (errorDetected) {
