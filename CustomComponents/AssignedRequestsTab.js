@@ -67,13 +67,13 @@ const AssignedRequestTabComponent = (props) => {
 
   // function that closes a request using a request id
   const closeRequest = (request_id) => {
-    setModalVisible(!modalVisible) // hide the modal
     // we need to make sure that users is sure!
     Alert.alert(getTranslatedMessage('sure_close', appInfoStore), "",
       [
         {
           text: getTranslatedMessage('yes', appInfoStore),
           onPress: () => {
+            setModalVisible(!modalVisible) // hide the modal
             // they are sure - we can tell the API to close this request.
             closeRequestWithId(appInfo, request_id, function(err, api_return) { 
               if (err) {
