@@ -27,8 +27,6 @@ const CustomTabNavigatorComponent = (props) => {
     const [myOpenRequests, setMyOpenRequest] = useState(0)
     const [myOpenAssignedRequests, setMyOpenAssignedRequests] = useState(0)
 
-
-
     // helper function to update get the record counts from the API and refresh them on the badges
     
     const updateRecordCounts = React.useCallback(() => {
@@ -67,7 +65,6 @@ const CustomTabNavigatorComponent = (props) => {
             screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
-
                 if (route.name === getTranslatedMessage('my_requests_tab',appInfoStore)) {
                 iconName = focused
                     ? 'ios-archive'
@@ -84,10 +81,14 @@ const CustomTabNavigatorComponent = (props) => {
                 iconName = focused
                     ? 'ios-git-network'
                     : 'ios-git-network-outline';
-                } else if (route.name === getTranslatedMessage('settings_tab',appInfoStore)) {
+                } else if (route.name === getTranslatedMessage('settings_tab', appInfoStore)) {
                   iconName = focused
                       ? 'ios-settings'
                       : 'ios-settings-outline';
+                } else {
+                  iconName = focused
+                  ? 'ios-help'
+                  : 'ios-help-outline';
                 }
                 return <Ionicons name={iconName} size={size} color={color} />;
             },

@@ -135,7 +135,7 @@ const MyRequestsTabComponent = (props) => {
                 <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
                   refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                     <TableView style={{backgroundColor : "#FFF"}}>
-                      <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
+                    <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader appInfoStore={appInfoStore} boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
                         <View style={customCellStyles.noRecordBubble}>
                           <Text>{getTranslatedMessage('no_records_found', appInfoStore)}</Text>
                         </View>
@@ -213,7 +213,7 @@ const MyRequestsTabComponent = (props) => {
                   <ScrollView style={{height:"100%", backgroundColor: "#FFF"}}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                       <TableView style={{backgroundColor : "#FFF"}}>
-                        <Section  sectionPaddingTop={0} headerComponent={<CustomSectionHeader boolCompleted={boolCompleted} toggleSwitch={toggleSwitch} />}>
+                      <Section sectionPaddingTop={0} headerComponent={<CustomSectionHeader appInfoStore={appInfoStore} boolCompleted={boolCompleted} toggleSwitch={toggleSwitch}/>}>
                             {myRequests.data.map((item, i) => (
                                   <RequestCustomCell 
                                       {...props}

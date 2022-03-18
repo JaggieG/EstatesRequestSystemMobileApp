@@ -41,7 +41,7 @@ import {
   
 // the connection tab
 const MakeARequestTabComponent = (props) => {
-  //globla variables
+  //global variables
   var appInfoStore = props.appInfoStore
   const updateBadges = props.updateBadges
   const appInfo = appInfoStore.getState()
@@ -74,6 +74,7 @@ const MakeARequestTabComponent = (props) => {
     setRefreshing(true);
 
     var appInfo = appInfoStore.getState()
+  
     getUrgencyList(appInfo, function(err, urgencyReturnData) {
           if(err) {
             setErrorDetected(true)
