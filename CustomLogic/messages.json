@@ -2,15 +2,15 @@
     "allMessages" : {
         "my_requests_tab" : {
             "en" : "My Requests",
-            "fr" : "Mes Requetes"
+            "fr" : "Mes Requêtes"
         },
         "make_request_tab" : {
             "en" : "Make a Request",
-            "fr" : "Creer un Requete"
+            "fr" : "Créer une Requête"
         },
         "assigned_requests_tab" : {
             "en" : "Assigned",
-            "fr" : "Assigner"
+            "fr" : "Attribué"
         },
         "connection_tab" : {
             "en" : "Connection",
@@ -18,56 +18,56 @@
         },
         "settings_tab" : {
             "en" : "Settings",
-            "fr" : "Reglages"
+            "fr" : "Réglages"
         },
 
         
 
     "assigned_reqeust" : {
         "en" : "Assigned Requests",
-        "fr" : "Requete assigné"
+        "fr" : "Requêtes attribuées"
     },
 
 
         "not_logged_in" : {
             "en" : "You are not currently logged in \r\n\r\n Please click below to connect with your Google Workspace account",
-            "fr" : "Vous n'etes pas connecté, \r\n\r\n Veuilliez cliquer le button dessous pour se logger avec votre compte Google Workspace"
+            "fr" : "Vous n'êtes pas connecté, \r\n\r\n Veuillez cliquer le bouton ci-dessous pour se connecter à votre compte Google Workspace"
         },
         "logged_in" : {
             "en" : "You are currently logged in\r\n\r\n Please see details below",
-            "fr" : "Vous etes connecté\r\n Detailes dessous"
+            "fr" : "Vous êtes connecté\r\n Détails ci-dessous"
         },
         "log_in_again" : {
             "en" : "Click the button in order to refresh the connection",
-            "fr" : "Cliquer le button pour faire connecter a nouveau."
+            "fr" : "Cliquer le bouton pour vous connecter à nouveau."
         },
         "choose_language" : {
-            "en" : "Choose Langauge",
-            "fr" : "Chosir Langue."
+            "en" : "Choose Language",
+            "fr" : "Choisir Langue."
         },
 
 
         "authentication_failure" : {
-            "en" : "Oops soomething went wrong with authentication! - Please speak to the IT",
-            "fr" : "Une erreur se produit, veuilliez contactez la service infomatique"
+            "en" : "Oops something went wrong with authentication! - Please speak to the IT",
+            "fr" : "Une erreur s'est produite, veuillez contacter le service informatique"
         },
         "urlFailure" : {
             "en" : "In order to be able to call the oAuth we need a redirect URL - this is taken when the expo app is opened with the barcode, please scan a barcode",
-            "fr" : "In order to be able to call the oAuth we need a redirect URL - this is taken when the expo app is opened with the barcode, please scan a barcode"
+            "fr" : "Pour pouvoir appeler oAuth, nous avons besoin d'une redirection d'URL - celle-ci est prise lorsque l'application expo est ouverte avec le code-barres, veuillez scanner un code-barres"
         },
         "forced_dev" : {
             "en" : "You have been forced into DEV mode",
-            "fr" : "Le mode de devleopment est activé"
+            "fr" : "Vous êtes forcé dans le mode développement"
         },
         "authentication_failure_noRecords" : {
-            "en" : "No records were retured from the auth server, bizarre! Plase speak to IT",
-            "fr" : "Aucun record a été retourner du serveur d'authenification, veuillie contacter la service informatique"
+            "en" : "No records were returned from the auth server, bizarre! Please speak to IT",
+            "fr" : "Aucune entrée n'a été retournée du serveur d'authentification! Veuillez contacter la service informatique"
         },
 
 
         "make_request_building" : {
             "en" : "Building / Location",
-            "fr" : "Batiment / Endroit"
+            "fr" : "Bâtiment / Endroit"
         },
         "make_request_urgency" : {
             "en" : "Urgency",
@@ -83,7 +83,7 @@
         },
         "assigned_to" : {
             "en" : "Assigned To",
-            "fr" : "Assigner a"
+            "fr" : "Assigner à"
         },
 
         "desc_en" : {
@@ -93,28 +93,28 @@
 
         "desc_fr" : {
             "en" : "French Desc",
-            "fr" : "Desc Francais"
+            "fr" : "Desc Français"
         },
 
         "submitted_data_time" : {
             "en" : "Submitted @",
-            "fr" : "Creer a"
+            "fr" : "Soumis à"
         },
 
         "creator_email" : {
             "en" : "Creator Email",
-            "fr" : "Creator Email a"
+            "fr" : "Créer Email "
         },
 
         "creator_name" : {
             "en" : "Creator Name",
-            "fr" : "Creator Name"
+            "fr" : "Créer Nom"
         },
         
         
         "assigned_to_email" : {
             "en" : "Assigned to Email",
-            "fr" : "Assigner a Emile"
+            "fr" : "Attribué à l'email"
         },
         
         "completed" : {
@@ -124,7 +124,7 @@
 
         "close_request" : {
             "en" : "Close Request",
-            "fr" : "Ferme Requete"
+            "fr" : "Ferme demande"
         },
 
         "yes" : {
@@ -138,7 +138,7 @@
     
         "sure_close" : {
             "en" : "Are you sure you want to close this request?",
-            "fr" : "Est-ce que vous etes sur que vous voulez fermer cette requete?"
+            "fr" : "Êtes-vous sures de vouloir fermer cette demande?"
         },
 
         
@@ -149,7 +149,7 @@
 
         "no_records_found" : {
             "en" : "No Records Found",
-            "fr" : "Pas d'informations trouvé"
+            "fr" : "Pas d'informations trouvées"
         },
 
         
@@ -157,7 +157,7 @@
 
         "please_choose" : {
             "en" : "Tap to choose",
-            "fr" : "Veuilliz Choisir"
+            "fr" : "Veuillez Choisir"
         },
         "submit" : {
             "en" : "Send",
@@ -173,7 +173,7 @@
 
         "make_request_no_building" : {
             "en" : "You didn't choose a building / location",
-            "fr" : "Vous n'avez pas choisi un batiment / endroit"
+            "fr" : "Vous n'avez pas choisi un bâtiment / endroit"
         },
         "make_request_no_urgency" : {
             "en" : "You didn't choose an urgency",
@@ -181,23 +181,23 @@
         },
         "make_request_no_description" : {
             "en" : "You didn't type a description!",
-            "fr" : "Vous n'avez tappé un description"
+            "fr" : "Vous n'avez pas entré une description"
         },
         "make_request_no_title" : {
             "en" : "You didn't enter a title?",
-            "fr" : "Vous n'avez tappé un titre"
+            "fr" : "Vous n'avez entré un titre"
         },
         "completed_requests" : {
             "en" : "Completed Requests?",
-            "fr" : "Requete Fini?"
+            "fr" : "Requête Finie?"
         },
         
         
 
 
         "generic_error" : {
-            "en" : "Oops soomething went wrong! - Please speak to the IT",
-            "fr" : "Une erreur se produit, veuilliez contactez la service infomatique"
+            "en" : "Oops something went wrong! - Please speak to the IT",
+            "fr" : "Une erreur s'est produite, veuillez contacter le service informatique"
         }
 
 

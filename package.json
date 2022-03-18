@@ -16,12 +16,15 @@
     "@react-navigation/stack": "^6.0.11",
     "@reduxjs/toolkit": "^1.7.2",
     "@testing-library/jest-dom": "^5.16.2",
+    "@unimodules/core": "^7.1.2",
+    "@unimodules/react-native-adapter": "^6.3.9",
     "expo": "~44.0.0",
     "expo-auth-session": "~3.3.1",
     "expo-random": "~11.2.0",
-    "expo-secure-store": "~10.2.0",
-    "expo-status-bar": "~1.0.4",
-    "jest": "^27.5.1",
+    "expo-secure-store": "^10.2.0",
+    "expo-status-bar": "^1.0.4",
+    "fetch": "^1.1.0",
+    "jest": "^26.6.3",
     "jest-expo": "^44.0.1",
     "jest-fetch-mock": "^3.0.3",
     "react": "17.0.1",
@@ -33,21 +36,22 @@
     "react-native-app-auth": "^6.4.1",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-modalbox": "^2.0.2",
-    "react-native-safe-area-context": "3.2.0",
+    "react-native-safe-area-context": "^3.2.0",
     "react-native-safe-area-view": "^1.1.1",
     "react-native-screens": "~3.4.0",
     "react-native-select-dropdown": "^1.7.0",
     "react-native-tableview-simple": "^4.3.1",
     "react-native-testing-library": "^6.0.0",
     "react-native-web": "0.17.1",
-    "tcomb-form-native": "^0.6.20",
-    "react-redux": "~7.2.6"
+    "react-redux": "~7.2.6",
+    "tcomb-form-native": "^0.6.20"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "react-test-renderer": "^17.0.2"
   },
   "jest": {
-    "preset": "jest-expo/universal"
+    "preset": "jest-expo"
   },
   "private": true
 }
