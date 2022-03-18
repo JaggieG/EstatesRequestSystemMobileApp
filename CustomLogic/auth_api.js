@@ -91,13 +91,16 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
   const url = url_.url
   if (url) {
     if (url.indexOf("?retrieval_token") !== -1) {
+     
         // now we have a retreival token we have 1 minute to use to to get our JWT token. We post it to the endpoint for security
         var regex = /[?&]([^=#]+)=([^&#]*)/g,
         params = {},
         match;
-            while (match == regex.exec(url)) {
+            while (match = regex.exec(url)) {
                 params[match[1]] = match[2];
             }  
+
+            console.log('token: ' + params["retrieval_token"])
 
         const appInfo = appStoreInfo.getState()
         const retrieval_url = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.retrieval_endpoint
@@ -114,7 +117,7 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
           .then((json) => {
             console.log(json)
             var record_count = json.record_count
-
+          
             if (record_count == 0) {
               Alert.alert(getTranslatedMessage('authentication_failure_noRecords', appInfoStore))
             } else {

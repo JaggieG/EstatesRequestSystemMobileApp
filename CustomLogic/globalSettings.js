@@ -8,7 +8,7 @@
   with in the documentation
 
 */
-export const forceDevCreditionals = true
+export const forceDevCreditionals = false
 export const force_settings_reload_at_restart = false
 export const forced_dev_emailAdddress = 'jag@aiglon.ch'
 export const forced_dev_displayName = 'John Gerhardt'
