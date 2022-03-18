@@ -384,6 +384,9 @@ const AssignedRequestTabComponent = (props) => {
       height : 200,
       marginBottom : 20
   },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
   button: {
     borderRadius: 20,
     padding: 10,

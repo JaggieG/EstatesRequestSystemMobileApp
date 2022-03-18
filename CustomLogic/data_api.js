@@ -90,10 +90,11 @@ export const closeRequestWithId = async (appInfo, request_id, callback) => {
                 payload : {
                     request_id : request_id,
                 }
-            })//
+            })
         });
-        
+        console.log('json:' + JSON.stringify(response))
         let json = await response.json();
+        
         callback(null, json)
     } catch(err) {
         console.log(err)

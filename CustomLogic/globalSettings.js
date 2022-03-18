@@ -8,7 +8,7 @@
   with in the documentation
 
 */
-export const forceDevCreditionals = false
+export const forceDevCreditionals = true
 export const force_settings_reload_at_restart = false
 export const forced_dev_emailAdddress = 'jag@aiglon.ch'
 export const forced_dev_displayName = 'John Gerhardt'
@@ -37,7 +37,7 @@ const retrieval_endpoint = "retrieval"
 var api_server_url = api_server_url_prod
 if (forceDevCreditionals) {
     // This is off when the testing with non local clients
-    //api_server_url = api_server_url_testing_no_auth
+    // api_server_url = api_server_url_testing_no_auth
 } else {
     api_server_url = api_server_url_prod
 }

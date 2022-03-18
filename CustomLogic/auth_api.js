@@ -100,7 +100,7 @@ export const processAuthReturn = (url_, appStoreInfo, refreshMe) => {
                 params[match[1]] = match[2];
             }  
 
-            console.log('token: ' + params["retrieval_token"])
+            console.log('token:' + params["retrieval_token"])
 
         const appInfo = appStoreInfo.getState()
         const retrieval_url = appInfo.api_details.api_server_url + appInfo.api_details.api_path + appInfo.api_details.retrieval_endpoint
